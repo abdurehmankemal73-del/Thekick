@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Inter, Oswald, Noto_Sans_Ethiopic } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { CLUB } from "@/lib/constants";
+import { getMetadataBase } from "@/lib/site-url";
 import "./globals.css";
 
 const inter = Inter({
@@ -22,7 +23,7 @@ const notoEthiopic = Noto_Sans_Ethiopic({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.AUTH_URL ?? "http://localhost:3000"),
+  metadataBase: getMetadataBase(),
   title: {
     default: `${CLUB.shortName} | ${CLUB.fullName}`,
     template: `%s | ${CLUB.shortName}`,
