@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1788184834878,
+      "tag": "0000_perfect_nuke",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788222000000,
+      "tag": "0001_calendar_news_approval",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788252000000,
+      "tag": "0002_black_belt",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788255600000,
+      "tag": "0003_uploaded_files",
+      "breakpoints": true
+    }
+  ]
+}

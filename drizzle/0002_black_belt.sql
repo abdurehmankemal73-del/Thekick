@@ -1,0 +1,1 @@
+ALTER TYPE "public"."belt_level" ADD VALUE IF NOT EXISTS 'BLACK' BEFORE 'DAN_1';
