@@ -66,6 +66,8 @@
     "vitest": "^4.1.11"
   },
   "allowScripts": {
-    "@embedded-postgres/windows-x64@18.4.0-beta.17": true
+    "@embedded-postgres/windows-x64@18.4.0-beta.17": true,
+    "@embedded-postgres/linux-x64@18.4.0-beta.17": true,
+    "@embedded-postgres/linux-arm64@18.4.0-beta.17": true
   }
 }

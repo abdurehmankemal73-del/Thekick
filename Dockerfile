@@ -4,14 +4,17 @@ FROM node:20-alpine AS deps
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
 COPY package.json package-lock.json ./
-RUN npm ci
+# Coolify injects ARG NODE_ENV=production into every stage; that makes npm skip
+# devDependencies. Force a full install. Skip lifecycle scripts: allowScripts only
+# lists the Windows embedded-postgres binary, so Linux npm ci otherwise exits 1.
+RUN NODE_ENV=development npm ci --ignore-scripts --no-audit --no-fund
 
 FROM node:20-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
+RUN NODE_ENV=production npm run build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
