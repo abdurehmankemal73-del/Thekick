@@ -1,6 +1,7 @@
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
+import { postgresSsl } from "./ssl";
 
 export type Database = PostgresJsDatabase<typeof schema>;
 
@@ -17,7 +18,6 @@ export function getDb(): Database {
     throw new Error("DATABASE_URL is not set");
   }
 
-  const local = /localhost|127\.0\.0\.1/.test(url);
   const serverless = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
   const pooled = /pooler|-pool\./i.test(url);
 
@@ -26,7 +26,7 @@ export function getDb(): Database {
     idle_timeout: serverless ? 20 : 0,
     connect_timeout: 30,
     prepare: !pooled,
-    ssl: local ? undefined : "require",
+    ssl: postgresSsl(url),
   });
   const database = drizzle(conn, { schema });
   globalForDb.conn = conn;

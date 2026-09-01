@@ -1,0 +1,15 @@
+node_modules
+.next
+.git
+.data
+data
+.env
+.env.*
+coverage
+*.md
+AGENTS.md
+CLAUDE.md
+.vscode
+.idea
+.vercel
+.netlify
