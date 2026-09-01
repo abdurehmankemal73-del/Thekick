@@ -1,15 +1,16 @@
-# Intended local PostgreSQL for THE KICK.
-# Same credentials as DATABASE_URL: postgresql://thekick:thekick@localhost:5432/thekick
+# Coolify reads this file by default. It must include a web service (`app`)
+# or Coolify cannot assign domains (only databases are not enough).
+# Local Postgres only: docker compose -f docker-compose.dev.yml up -d
+#
+# In Coolify → Domains, attach https://kick.smarterp.space to the `app` service.
 services:
   db:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER: thekick
-      POSTGRES_PASSWORD: thekick
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-thekick}
       POSTGRES_DB: thekick
-    ports:
-      - "5432:5432"
     volumes:
       - thekick_pg:/var/lib/postgresql/data
     healthcheck:
@@ -17,6 +18,49 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: the-kick:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "3000"
+    ports:
+      - "3000"
+    environment:
+      - SERVICE_URL_APP_3000=https://kick.smarterp.space
+      - SERVICE_FQDN_APP_3000=https://kick.smarterp.space
+      - DATABASE_URL=postgresql://thekick:${POSTGRES_PASSWORD:-thekick}@db:5432/thekick
+      - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_URL=${AUTH_URL:-https://kick.smarterp.space}
+      - AUTH_TRUST_HOST=true
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - SEED_DEMO=false
+      - RUN_DB_SEED=${RUN_DB_SEED:-true}
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_SECURE=${SMTP_SECURE:-false}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+      - SMTP_FROM=${SMTP_FROM:-THE KICK <abdurehmankemal73@gmail.com>}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
 
 volumes:
   thekick_pg:

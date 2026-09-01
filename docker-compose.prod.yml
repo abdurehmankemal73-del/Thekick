@@ -1,12 +1,11 @@
-# Coolify / production: app + Postgres on https://kick.smarterp.space
-# Set POSTGRES_PASSWORD, AUTH_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD, SMTP_* in Coolify.
+# Same stack as docker-compose.yml for Coolify compose-file overrides.
 services:
   db:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER: thekick
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-thekick}
       POSTGRES_DB: thekick
     volumes:
       - thekick_pg:/var/lib/postgresql/data
@@ -17,28 +16,35 @@ services:
       retries: 10
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: the-kick:latest
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
+    expose:
+      - "3000"
     ports:
-      - "3000:3000"
+      - "3000"
     environment:
-      DATABASE_URL: postgresql://thekick:${POSTGRES_PASSWORD}@db:5432/thekick
-      AUTH_SECRET: ${AUTH_SECRET}
-      AUTH_URL: ${AUTH_URL:-https://kick.smarterp.space}
-      AUTH_TRUST_HOST: "true"
-      ADMIN_EMAIL: ${ADMIN_EMAIL}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      SEED_DEMO: "false"
-      RUN_DB_SEED: ${RUN_DB_SEED:-true}
-      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
-      SMTP_PORT: ${SMTP_PORT:-587}
-      SMTP_SECURE: ${SMTP_SECURE:-false}
-      SMTP_USER: ${SMTP_USER:-}
-      SMTP_PASS: ${SMTP_PASS:-}
-      SMTP_FROM: "${SMTP_FROM:-THE KICK <abdurehmankemal73@gmail.com>}"
+      - SERVICE_URL_APP_3000=https://kick.smarterp.space
+      - SERVICE_FQDN_APP_3000=https://kick.smarterp.space
+      - DATABASE_URL=postgresql://thekick:${POSTGRES_PASSWORD:-thekick}@db:5432/thekick
+      - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_URL=${AUTH_URL:-https://kick.smarterp.space}
+      - AUTH_TRUST_HOST=true
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - SEED_DEMO=false
+      - RUN_DB_SEED=${RUN_DB_SEED:-true}
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_SECURE=${SMTP_SECURE:-false}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+      - SMTP_FROM=${SMTP_FROM:-THE KICK <abdurehmankemal73@gmail.com>}
     healthcheck:
       test:
         [

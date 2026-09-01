@@ -16,7 +16,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx src/db/seed.ts",
-    "db:up": "docker compose up -d",
+    "db:up": "docker compose -f docker-compose.dev.yml up -d",
     "db:embedded": "tsx scripts/dev-db.ts"
   },
   "dependencies": {

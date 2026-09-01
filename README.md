@@ -24,7 +24,7 @@ Browser → Next.js pages / Route Handlers → guards → Drizzle → PostgreSQL
 ## Requirements
 
 - Node.js 20+
-- Docker for local PostgreSQL (`docker compose up -d`)
+- Docker for local PostgreSQL (`npm run db:up`)
 
 If Docker Hub cannot pull `postgres:16-alpine`, you may temporarily run `npm run db:embedded`. That is a development fallback only. The app still uses Drizzle + `DATABASE_URL` against standard PostgreSQL. Switch back to Docker later with no schema or query changes.
 
@@ -62,10 +62,10 @@ Do not put real secrets in this README or in source control.
 **Intended local database:** Docker PostgreSQL.
 
 ```bash
-docker compose up -d
+npm run db:up
 ```
 
-[`docker-compose.yml`](docker-compose.yml) starts `postgres:16-alpine` with user/password/database `thekick` on port `5432`, matching:
+[`docker-compose.dev.yml`](docker-compose.dev.yml) starts `postgres:16-alpine` with user/password/database `thekick` on port `5432`, matching:
 
 ```
 DATABASE_URL=postgresql://thekick:thekick@localhost:5432/thekick
@@ -77,7 +77,7 @@ DATABASE_URL=postgresql://thekick:thekick@localhost:5432/thekick
 npm run db:embedded
 ```
 
-Keep that process running. It serves the **same** `DATABASE_URL` on `localhost:5432`. Application database logic does not change. When Docker Hub works, stop the embedded process and use `docker compose up -d` instead.
+Keep that process running. It serves the **same** `DATABASE_URL` on `localhost:5432`. Application database logic does not change. When Docker Hub works, stop the embedded process and use `npm run db:up` instead.
 
 Then apply migrations against whichever PostgreSQL is listening:
 
