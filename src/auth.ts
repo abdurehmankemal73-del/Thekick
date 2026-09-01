@@ -52,7 +52,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             .from(users)
             .where(eq(users.email, email))
             .limit(1);
-        } catch {
+        } catch (error) {
+          console.error("[auth] database lookup failed", error);
           throw new AuthError("service_unavailable");
         }
 

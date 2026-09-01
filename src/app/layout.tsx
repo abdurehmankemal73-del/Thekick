@@ -1,25 +1,33 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Inter, Oswald, Noto_Sans_Ethiopic } from "next/font/google";
+import localFont from "next/font/local";
 import { Providers } from "@/components/providers";
 import { CLUB } from "@/lib/constants";
 import { getMetadataBase } from "@/lib/site-url";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
+const inter = localFont({
+  src: "../fonts/inter-latin.woff2",
   variable: "--font-inter",
+  display: "swap",
+  weight: "100 900",
 });
 
-const oswald = Oswald({
-  subsets: ["latin"],
+const oswald = localFont({
+  src: "../fonts/oswald-latin.woff2",
   variable: "--font-oswald",
+  display: "swap",
+  weight: "200 700",
 });
 
-const notoEthiopic = Noto_Sans_Ethiopic({
-  subsets: ["ethiopic"],
-  weight: ["400", "600", "700"],
+const notoEthiopic = localFont({
+  src: [
+    { path: "../fonts/noto-ethiopic-400.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/noto-ethiopic-600.woff2", weight: "600", style: "normal" },
+    { path: "../fonts/noto-ethiopic-700.woff2", weight: "700", style: "normal" },
+  ],
   variable: "--font-ethiopic",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
