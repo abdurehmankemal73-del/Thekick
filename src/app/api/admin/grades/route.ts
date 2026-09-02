@@ -7,6 +7,7 @@ import { requireAdmin } from "@/lib/guards";
 import { gradeSchema } from "@/lib/validations";
 import { parsePage, searchParam } from "@/lib/pagination";
 import { writeAudit } from "@/lib/audit";
+import { applyGradeScores, storedOrCalculatedOverall } from "@/lib/grades";
 import type { BeltLevel } from "@/db/schema";
 
 export async function GET(request: NextRequest) {
@@ -45,6 +46,7 @@ export async function GET(request: NextRequest) {
     return json({
       grades: rows.map((row) => ({
         ...row.grade,
+        overallScore: storedOrCalculatedOverall(row.grade),
         studentName: row.studentName,
         studentBelt: row.studentBelt,
         studentEmail: row.studentEmail,
@@ -72,17 +74,13 @@ export async function POST(request: Request) {
       throw new HttpError(404, "Student not found");
     }
 
+    const scores = applyGradeScores({}, data);
     const [created] = await db
       .insert(grades)
       .values({
         studentId: data.studentId,
         assessmentName: data.assessmentName,
-        patternScore: data.patternScore ?? null,
-        sparringScore: data.sparringScore ?? null,
-        kicksScore: data.kicksScore ?? null,
-        theoryScore: data.theoryScore ?? null,
-        disciplineScore: data.disciplineScore ?? null,
-        overallScore: data.overallScore ?? null,
+        ...scores,
         result: data.result || null,
         instructorComment: data.instructorComment || null,
         assessmentDate: new Date(data.assessmentDate),

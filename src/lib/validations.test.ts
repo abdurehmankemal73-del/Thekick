@@ -6,6 +6,7 @@ import {
   loginSchema,
   permissionCreateSchema,
   registerSchema,
+  gradeSchema,
 } from "@/lib/validations";
 import { BELT_LEVELS } from "@/lib/constants";
 import { sameBeltMember } from "@/lib/dtos";
@@ -176,6 +177,39 @@ describe("calendar and news validation", () => {
         status: "PUBLISHED",
       }).success,
     ).toBe(true);
+  });
+});
+
+describe("grade validation", () => {
+  const valid = {
+    studentId: "student-1",
+    assessmentName: "Monthly grading",
+    assessmentDate: "2026-09-01",
+    patternScore: "82",
+    sparringScore: 78,
+    kicksScore: "",
+    theoryScore: null,
+  };
+
+  it("accepts skill scores and leaves omitted scores unset", () => {
+    const result = gradeSchema.safeParse(valid);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.patternScore).toBe(82);
+      expect(result.data.sparringScore).toBe(78);
+      expect(result.data.kicksScore).toBeNull();
+      expect(result.data.disciplineScore).toBeUndefined();
+      expect(result.data).not.toHaveProperty("overallScore");
+    }
+  });
+
+  it("keeps omitted scores undefined on partial updates", () => {
+    const result = gradeSchema.partial().safeParse({ patternScore: 90 });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.patternScore).toBe(90);
+      expect(result.data.sparringScore).toBeUndefined();
+    }
   });
 });
 

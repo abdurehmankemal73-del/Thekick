@@ -77,17 +77,19 @@ export const permissionAdminUpdateSchema = z.object({
   adminNote: z.string().trim().max(500).optional(),
 });
 
-const score = z.coerce.number().int().min(0).max(100).optional().nullable();
+const score = z.preprocess(
+  (value) => (value === "" ? null : value),
+  z.union([z.null(), z.coerce.number().int().min(0).max(100)]).optional(),
+);
 
 export const gradeSchema = z.object({
   studentId: z.string().min(1, "Student is required"),
   assessmentName: z.string().trim().min(2).max(200),
-  patternScore: score,
-  sparringScore: score,
-  kicksScore: score,
-  theoryScore: score,
-  disciplineScore: score,
-  overallScore: score,
+  patternScore: score.optional(),
+  sparringScore: score.optional(),
+  kicksScore: score.optional(),
+  theoryScore: score.optional(),
+  disciplineScore: score.optional(),
   result: z.string().trim().max(80).optional().nullable(),
   instructorComment: z.string().trim().max(2000).optional().nullable(),
   assessmentDate: z.string().min(1, "Assessment date is required"),

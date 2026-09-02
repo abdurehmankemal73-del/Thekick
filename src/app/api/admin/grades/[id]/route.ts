@@ -1,10 +1,11 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { grades } from "@/db/schema";
+import { grades, users } from "@/db/schema";
 import { errorResponse, json, readJson, HttpError } from "@/lib/http";
 import { requireAdmin } from "@/lib/guards";
 import { gradeSchema } from "@/lib/validations";
 import { writeAudit } from "@/lib/audit";
+import { applyGradeScores } from "@/lib/grades";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -18,18 +19,20 @@ export async function PATCH(request: Request, ctx: Ctx) {
     const [existing] = await db.select().from(grades).where(eq(grades.id, id)).limit(1);
     if (!existing) throw new HttpError(404, "Grade not found");
 
+    if (data.studentId && data.studentId !== existing.studentId) {
+      const [student] = await db.select().from(users).where(eq(users.id, data.studentId)).limit(1);
+      if (!student || student.role !== "STUDENT") {
+        throw new HttpError(404, "Student not found");
+      }
+    }
+
+    const scores = applyGradeScores(existing, data);
     const [updated] = await db
       .update(grades)
       .set({
+        ...(data.studentId ? { studentId: data.studentId } : {}),
         ...(data.assessmentName ? { assessmentName: data.assessmentName } : {}),
-        ...(data.patternScore !== undefined ? { patternScore: data.patternScore ?? null } : {}),
-        ...(data.sparringScore !== undefined ? { sparringScore: data.sparringScore ?? null } : {}),
-        ...(data.kicksScore !== undefined ? { kicksScore: data.kicksScore ?? null } : {}),
-        ...(data.theoryScore !== undefined ? { theoryScore: data.theoryScore ?? null } : {}),
-        ...(data.disciplineScore !== undefined
-          ? { disciplineScore: data.disciplineScore ?? null }
-          : {}),
-        ...(data.overallScore !== undefined ? { overallScore: data.overallScore ?? null } : {}),
+        ...scores,
         ...(data.result !== undefined ? { result: data.result || null } : {}),
         ...(data.instructorComment !== undefined
           ? { instructorComment: data.instructorComment || null }

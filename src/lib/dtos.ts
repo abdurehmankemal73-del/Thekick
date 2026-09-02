@@ -1,5 +1,6 @@
 import type { Grade, User } from "@/db/schema";
 import { BELT_LABELS } from "@/lib/constants";
+import { storedOrCalculatedOverall } from "@/lib/grades";
 
 export function publicUser(user: User) {
   return {
@@ -32,7 +33,7 @@ export function publicGrade(grade: Grade) {
     kicksScore: grade.kicksScore,
     theoryScore: grade.theoryScore,
     disciplineScore: grade.disciplineScore,
-    overallScore: grade.overallScore,
+    overallScore: storedOrCalculatedOverall(grade),
     result: grade.result,
     instructorComment: grade.instructorComment,
     assessmentDate: grade.assessmentDate,

@@ -92,7 +92,7 @@ export default function StudentDashboardPage() {
               {data.grades.map((g) => (
                 <li key={g.id} className="flex justify-between border-b border-line py-2">
                   <span>{g.assessmentName}</span>
-                  <span>{g.result ?? g.overallScore ?? "—"}</span>
+                  <span>{g.overallScore ?? g.result ?? "—"}</span>
                 </li>
               ))}
             </ul>

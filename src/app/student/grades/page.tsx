@@ -47,7 +47,11 @@ export default function StudentGradesPage() {
                   <h2 className="text-xl">{grade.assessmentName}</h2>
                   <p className="text-sm text-muted">{formatDate(grade.assessmentDate)}</p>
                 </div>
-                <p className="font-display text-2xl text-red">{grade.result ?? grade.overallScore ?? "—"}</p>
+                <div className="text-right">
+                  <p className="text-xs text-muted">{t("overall")}</p>
+                  <p className="font-display text-2xl text-red">{grade.overallScore ?? "—"}</p>
+                  {grade.result ? <p className="text-sm text-muted">{grade.result}</p> : null}
+                </div>
               </div>
               <div className="mt-4 grid grid-cols-2 gap-2 text-sm md:grid-cols-5">
                 <Score label={t("pattern")} value={grade.patternScore} />
