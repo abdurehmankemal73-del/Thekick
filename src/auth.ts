@@ -7,6 +7,7 @@ import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import { loginSchema } from "@/lib/validations";
 import { loginRateLimit, clearLoginAttempts } from "@/lib/rate-limit";
+import { passwordCandidates } from "@/lib/password-candidates";
 
 class AuthError extends CredentialsSignin {
   constructor(code: string) {
@@ -57,7 +58,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new AuthError("invalid_credentials");
         }
 
-        const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
+        const passwordHash = user.passwordHash;
+        const valid = (
+          await Promise.all(
+            passwordCandidates(parsed.data.password).map((candidate) =>
+              bcrypt.compare(candidate, passwordHash),
+            ),
+          )
+        ).some(Boolean);
         if (!valid) {
           throw new AuthError("invalid_credentials");
         }
