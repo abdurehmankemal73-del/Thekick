@@ -15,15 +15,28 @@ import { DEFAULT_CLUB_SETTINGS } from "../lib/constants";
 config({ path: ".env.local" });
 config({ path: ".env" });
 
+function envValue(raw: string | undefined) {
+  if (raw == null) return undefined;
+  let value = raw.trim().replace(/\r$/g, "");
+  if (
+    (value.startsWith('"') && value.endsWith('"')) ||
+    (value.startsWith("'") && value.endsWith("'"))
+  ) {
+    value = value.slice(1, -1).trim();
+  }
+  return value || undefined;
+}
+
 async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not set");
 
-  const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
-  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminEmail = envValue(process.env.ADMIN_EMAIL)?.toLowerCase();
+  const adminPassword = envValue(process.env.ADMIN_PASSWORD);
   if (!adminEmail || !adminPassword) {
     throw new Error("ADMIN_EMAIL and ADMIN_PASSWORD must be set");
   }
+  console.log(`[seed] Admin email ${adminEmail}; password length ${adminPassword.length}`);
 
   const conn = postgres(url, { max: 1 });
   const db = drizzle(conn);

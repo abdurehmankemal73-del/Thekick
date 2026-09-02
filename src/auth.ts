@@ -24,7 +24,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const parsed = loginSchema.safeParse(credentials);
+        const emailRaw = credentials?.email;
+        const passwordRaw = credentials?.password;
+        const parsed = loginSchema.safeParse({
+          email: Array.isArray(emailRaw) ? emailRaw[0] : emailRaw,
+          password: Array.isArray(passwordRaw) ? passwordRaw[0] : passwordRaw,
+        });
         if (!parsed.success) {
           throw new AuthError("invalid_credentials");
         }
