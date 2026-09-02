@@ -40,7 +40,8 @@ function isPlaceholderHost(hostname: string) {
     host === "0.0.0.0" ||
     host.includes("replace_with") ||
     host.includes("your_coolify") ||
-    host.includes("your-coolify")
+    host.includes("your-coolify") ||
+    host.endsWith(".sslip.io")
   );
 }
 

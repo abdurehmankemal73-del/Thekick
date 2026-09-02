@@ -8,7 +8,7 @@ fi
 
 case "${AUTH_URL:-}" in
   //*) AUTH_URL="https:${AUTH_URL}" ;;
-  *replace_with*|*your_coolify*|*your-coolify*|*"0.0.0.0"*) AUTH_URL="" ;;
+  *replace_with*|*your_coolify*|*your-coolify*|*sslip.io*|*"0.0.0.0"*) AUTH_URL="" ;;
 esac
 if [ -z "${AUTH_URL:-}" ]; then
   AUTH_URL="${SERVICE_URL_APP_3000:-https://kick.smarterp.space}"

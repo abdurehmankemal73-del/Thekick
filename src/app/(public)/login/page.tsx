@@ -3,6 +3,7 @@
 import { FormEvent, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { getSession } from "next-auth/react";
 import { LogIn, Mail, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -11,7 +12,6 @@ import { FieldError, InputWithIcon, Label, PasswordInput } from "@/components/ui
 import { Icon, PageTitle } from "@/components/ui/icon";
 import { fieldErrors, loginSchema } from "@/lib/validations";
 import { useI18n } from "@/i18n/provider";
-import { loginAction } from "./actions";
 
 function safeCallback(value: string | null) {
   if (!value || !value.startsWith("/") || value.startsWith("//")) return null;
@@ -54,6 +54,51 @@ function loginMessage(code: string, fallback: string) {
   return fallback;
 }
 
+function errorFromUrl(raw: string | null | undefined) {
+  if (!raw) return { error: undefined as string | undefined, code: undefined as string | undefined };
+  try {
+    const next = new URL(raw, window.location.origin);
+    return {
+      error: next.searchParams.get("error") ?? undefined,
+      code: next.searchParams.get("code") ?? undefined,
+    };
+  } catch {
+    return { error: undefined, code: undefined };
+  }
+}
+
+async function signInWithCredentials(email: string, password: string) {
+  const csrfRes = await fetch("/api/auth/csrf", { credentials: "include" });
+  if (!csrfRes.ok) throw new Error("service_unavailable");
+  const csrf = (await csrfRes.json()) as { csrfToken?: string };
+  if (!csrf.csrfToken) throw new Error("service_unavailable");
+
+  const res = await fetch("/api/auth/callback/credentials", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Auth-Return-Redirect": "1",
+    },
+    body: new URLSearchParams({
+      email,
+      password,
+      csrfToken: csrf.csrfToken,
+      callbackUrl: "/",
+      json: "true",
+    }),
+    credentials: "include",
+    redirect: "manual",
+  });
+
+  const data = (await res.json().catch(() => null)) as { url?: string } | null;
+  const { error, code } = errorFromUrl(data?.url ?? res.headers.get("location"));
+  if (error || code) return { ok: false, error, code };
+  if (!res.ok && res.status !== 302 && res.status !== 307) {
+    return { ok: false, error: "service_unavailable", code: undefined };
+  }
+  return { ok: true, error: undefined, code: undefined };
+}
+
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
@@ -72,11 +117,10 @@ function LoginForm() {
     event.preventDefault();
     setErrors({});
     setFormError(null);
-    const form = event.currentTarget;
-    const formData = new FormData(form);
+    const form = new FormData(event.currentTarget);
     const parsed = loginSchema.safeParse({
-      email: String(formData.get("email") ?? ""),
-      password: String(formData.get("password") ?? ""),
+      email: String(form.get("email") ?? ""),
+      password: String(form.get("password") ?? ""),
     });
     if (!parsed.success) {
       setErrors(fieldErrors(parsed.error));
@@ -84,13 +128,17 @@ function LoginForm() {
     }
     setLoading(true);
     try {
-      const result = await loginAction(formData);
+      const result = await signInWithCredentials(parsed.data.email, parsed.data.password);
       if (!result.ok) {
-        const message = loginMessage(result.code, t("loginFailed"));
+        const message = loginMessage(
+          `${result.code ?? ""} ${result.error ?? ""}`,
+          t("loginFailed"),
+        );
         setFormError(message);
         toast.error(message);
         return;
       }
+      await getSession();
       toast.success(t("signedIn"));
       router.push(callbackUrl ?? "/student/dashboard");
       router.refresh();
@@ -113,9 +161,6 @@ function LoginForm() {
           </div>
         ) : null}
         <form onSubmit={onSubmit} className="space-y-4" noValidate>
-          {callbackUrl ? (
-            <input type="hidden" name="callbackUrl" value={callbackUrl} />
-          ) : null}
           <div>
             <Label htmlFor="email">{t("email")}</Label>
             <InputWithIcon icon={Mail} id="email" name="email" type="email" autoComplete="email" required />

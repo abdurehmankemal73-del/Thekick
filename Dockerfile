@@ -10,6 +10,8 @@ RUN NODE_ENV=development npm ci --ignore-scripts --no-audit --no-fund
 FROM node:22-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV AUTH_URL=https://kick.smarterp.space
+ENV AUTH_TRUST_HOST=true
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN NODE_ENV=production npm run build

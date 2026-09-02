@@ -2,11 +2,25 @@ import type { NextAuthConfig } from "next-auth";
 import type { BeltLevel } from "@/db/schema";
 import { ensureAuthUrl } from "@/lib/site-url";
 
-ensureAuthUrl();
+const authOrigin = ensureAuthUrl();
+const secureCookies = (authOrigin ?? process.env.AUTH_URL ?? "").startsWith("https://");
+
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: "lax" as const,
+  path: "/",
+  secure: secureCookies,
+};
 
 export const authConfig = {
   trustHost: true,
   secret: process.env.AUTH_SECRET,
+  useSecureCookies: secureCookies,
+  cookies: {
+    sessionToken: { name: "authjs.session-token", options: cookieOptions },
+    callbackUrl: { name: "authjs.callback-url", options: cookieOptions },
+    csrfToken: { name: "authjs.csrf-token", options: cookieOptions },
+  },
   pages: {
     signIn: "/login",
     error: "/login",

@@ -40,6 +40,12 @@ describe("getMetadataBase", () => {
     expect(getMetadataBase()).toBeUndefined();
   });
 
+  it("ignores Coolify sslip.io AUTH_URL so the public domain can be used", () => {
+    vi.stubEnv("AUTH_URL", "https://5uzaf9zqsgyyfefn9wxwciwe.13.140.149.168.sslip.io");
+    vi.stubEnv("SERVICE_URL_APP_3000", "https://kick.smarterp.space");
+    expect(getMetadataBase()?.href).toBe("https://kick.smarterp.space/");
+  });
+
   it("treats an empty AUTH_URL as unset instead of calling new URL('')", () => {
     vi.stubEnv("AUTH_URL", "");
     expect(getMetadataBase()).toBeUndefined();
@@ -89,8 +95,8 @@ describe("getMetadataBase", () => {
   });
 
   it("accepts Coolify protocol-relative URLs", () => {
-    vi.stubEnv("COOLIFY_URL", "//app.13.140.149.168.sslip.io");
-    expect(getMetadataBase()?.href).toBe("https://app.13.140.149.168.sslip.io/");
+    vi.stubEnv("COOLIFY_URL", "//kick.smarterp.space");
+    expect(getMetadataBase()?.href).toBe("https://kick.smarterp.space/");
   });
 
   it("uses SERVICE_URL_APP_3000 from Coolify Compose", () => {
@@ -130,6 +136,12 @@ describe("ensureAuthUrl", () => {
   it("ignores placeholder AUTH_URL and uses the Coolify public origin", () => {
     vi.stubEnv("AUTH_URL", "https://replace_with_your_coolify_domain");
     vi.stubEnv("SERVICE_URL_APP_3000", "https://kick.smarterp.space");
+    expect(ensureAuthUrl()).toBe("https://kick.smarterp.space");
+  });
+
+  it("ignores Coolify sslip.io AUTH_URL in production", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("AUTH_URL", "https://app.13.140.149.168.sslip.io");
     expect(ensureAuthUrl()).toBe("https://kick.smarterp.space");
   });
 
