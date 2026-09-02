@@ -12,6 +12,9 @@ const KEYS = [
   "URL",
   "DEPLOY_PRIME_URL",
   "PORT",
+  "SERVICE_URL_APP_3000",
+  "COOLIFY_URL",
+  "COOLIFY_FQDN",
 ] as const;
 
 describe("getMetadataBase", () => {
@@ -77,5 +80,15 @@ describe("getMetadataBase", () => {
   it("rejects an invalid AUTH_URL with a clear error", () => {
     vi.stubEnv("AUTH_URL", "://bad");
     expect(() => getMetadataBase()).toThrow(/AUTH_URL must be a full URL/);
+  });
+
+  it("accepts Coolify protocol-relative URLs", () => {
+    vi.stubEnv("COOLIFY_URL", "//app.13.140.149.168.sslip.io");
+    expect(getMetadataBase()?.href).toBe("https://app.13.140.149.168.sslip.io/");
+  });
+
+  it("uses SERVICE_URL_APP_3000 from Coolify Compose", () => {
+    vi.stubEnv("SERVICE_URL_APP_3000", "https://kick.smarterp.space");
+    expect(getMetadataBase()?.href).toBe("https://kick.smarterp.space/");
   });
 });

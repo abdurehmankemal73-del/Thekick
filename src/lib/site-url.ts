@@ -11,11 +11,15 @@ function cleanEnv(raw: string | undefined) {
 }
 
 function parseAbsoluteUrl(value: string, source: string): URL {
-  const candidate = /^https?:\/\//i.test(value)
-    ? value
-    : /^(localhost|127\.0\.0\.1)(:|\/|$)/i.test(value)
-      ? `http://${value}`
-      : `https://${value}`;
+  let trimmed = value.trim();
+  if (trimmed.startsWith("//")) {
+    trimmed = `https:${trimmed}`;
+  }
+  const candidate = /^https?:\/\//i.test(trimmed)
+    ? trimmed
+    : /^(localhost|127\.0\.0\.1)(:|\/|$)/i.test(trimmed)
+      ? `http://${trimmed}`
+      : `https://${trimmed}`;
 
   try {
     const url = new URL(candidate);
@@ -47,6 +51,14 @@ function netlifyDeploymentUrl() {
   return cleanEnv(process.env.URL) ?? cleanEnv(process.env.DEPLOY_PRIME_URL);
 }
 
+function coolifyDeploymentUrl() {
+  return (
+    cleanEnv(process.env.SERVICE_URL_APP_3000) ??
+    cleanEnv(process.env.COOLIFY_URL) ??
+    cleanEnv(process.env.COOLIFY_FQDN)
+  );
+}
+
 /** Public origin for metadata. Empty AUTH_URL is treated as unset, never `new URL("")`. */
 export function getMetadataBase(): URL | undefined {
   const authUrl = configuredAuthUrl();
@@ -62,6 +74,11 @@ export function getMetadataBase(): URL | undefined {
   const netlifyUrl = netlifyDeploymentUrl();
   if (netlifyUrl) {
     return parseAbsoluteUrl(netlifyUrl, "URL");
+  }
+
+  const coolifyUrl = coolifyDeploymentUrl();
+  if (coolifyUrl) {
+    return parseAbsoluteUrl(coolifyUrl, "COOLIFY_URL");
   }
 
   return undefined;
