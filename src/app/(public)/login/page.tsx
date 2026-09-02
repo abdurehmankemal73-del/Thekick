@@ -3,7 +3,7 @@
 import { FormEvent, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { LogIn, Mail, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -20,6 +20,9 @@ function safeCallback(value: string | null) {
 
 function loginMessage(code: string, fallback: string) {
   const normalized = code.toLowerCase();
+  if (!normalized || normalized === "default" || normalized === "undefined") {
+    return fallback;
+  }
   if (normalized.includes("pending_approval")) {
     return "Your registration is pending administrator approval.";
   }
@@ -36,11 +39,46 @@ function loginMessage(code: string, fallback: string) {
     normalized.includes("configuration") ||
     normalized.includes("missingsecret") ||
     normalized.includes("service_unavailable") ||
-    normalized.includes("econnrefused")
+    normalized.includes("econnrefused") ||
+    normalized.includes("accessdenied") ||
+    normalized.includes("callback")
   ) {
     return "Sign-in is temporarily unavailable. Please try again later.";
   }
   return fallback;
+}
+
+async function signInWithCredentials(email: string, password: string) {
+  const csrfRes = await fetch("/api/auth/csrf", { credentials: "same-origin" });
+  if (!csrfRes.ok) {
+    throw new Error("service_unavailable");
+  }
+  const csrf = (await csrfRes.json()) as { csrfToken?: string };
+  if (!csrf.csrfToken) {
+    throw new Error("service_unavailable");
+  }
+
+  const res = await fetch("/api/auth/callback/credentials", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Auth-Return-Redirect": "1",
+    },
+    body: new URLSearchParams({
+      email,
+      password,
+      csrfToken: csrf.csrfToken,
+      redirect: "false",
+      json: "true",
+    }),
+    credentials: "same-origin",
+  });
+
+  const data = (await res.json().catch(() => null)) as { url?: string } | null;
+  const next = data?.url ? new URL(data.url, window.location.origin) : null;
+  const error = next?.searchParams.get("error") ?? (res.ok ? undefined : "service_unavailable");
+  const code = next?.searchParams.get("code") ?? undefined;
+  return { ok: res.ok && !error, error, code };
 }
 
 function LoginForm() {
@@ -49,9 +87,12 @@ function LoginForm() {
   const { t } = useI18n();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [formError, setFormError] = useState<string | null>(
-    params.get("error") === "pending_approval" ? t("pendingApproval") : null,
-  );
+  const [formError, setFormError] = useState<string | null>(() => {
+    const error = params.get("error");
+    if (!error) return null;
+    if (error === "pending_approval") return t("pendingApproval");
+    return loginMessage(error, t("loginFailed"));
+  });
   const callbackUrl = safeCallback(params.get("callbackUrl"));
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -70,15 +111,11 @@ function LoginForm() {
     }
     setLoading(true);
     try {
-      const result = await signIn("credentials", {
-        email: parsed.data.email,
-        password: parsed.data.password,
-        redirect: false,
-      });
+      const result = await signInWithCredentials(parsed.data.email, parsed.data.password);
 
-      if (!result || result.error) {
+      if (!result.ok) {
         const message = loginMessage(
-          `${result?.code ?? ""} ${result?.error ?? ""}`,
+          `${result.code ?? ""} ${result.error ?? ""}`,
           t("loginFailed"),
         );
         setFormError(message);
@@ -86,6 +123,7 @@ function LoginForm() {
         return;
       }
 
+      await getSession();
       toast.success(t("signedIn"));
       if (callbackUrl) {
         router.push(callbackUrl);

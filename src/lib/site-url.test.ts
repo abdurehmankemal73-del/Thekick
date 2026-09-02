@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getMetadataBase } from "@/lib/site-url";
+import { ensureAuthUrl, getMetadataBase } from "@/lib/site-url";
 
 const KEYS = [
   "AUTH_URL",
   "NEXTAUTH_URL",
+  "AUTH_TRUST_HOST",
   "VERCEL_ENV",
   "VERCEL_URL",
   "VERCEL_BRANCH_URL",
@@ -32,6 +33,11 @@ describe("getMetadataBase", () => {
   it("uses AUTH_URL when it is a full URL", () => {
     vi.stubEnv("AUTH_URL", "https://thekick.example.com");
     expect(getMetadataBase()?.href).toBe("https://thekick.example.com/");
+  });
+
+  it("treats Coolify placeholder AUTH_URL as unset", () => {
+    vi.stubEnv("AUTH_URL", "https://replace_with_your_coolify_domain");
+    expect(getMetadataBase()).toBeUndefined();
   });
 
   it("treats an empty AUTH_URL as unset instead of calling new URL('')", () => {
@@ -90,5 +96,52 @@ describe("getMetadataBase", () => {
   it("uses SERVICE_URL_APP_3000 from Coolify Compose", () => {
     vi.stubEnv("SERVICE_URL_APP_3000", "https://kick.smarterp.space");
     expect(getMetadataBase()?.href).toBe("https://kick.smarterp.space/");
+  });
+});
+
+describe("ensureAuthUrl", () => {
+  beforeEach(() => {
+    vi.unstubAllEnvs();
+    for (const key of KEYS) {
+      delete process.env[key];
+    }
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("rewrites protocol-relative AUTH_URL so Auth.js can parse it", () => {
+    vi.stubEnv("AUTH_URL", "//kick.smarterp.space");
+    expect(ensureAuthUrl()).toBe("https://kick.smarterp.space");
+    expect(process.env.AUTH_URL).toBe("https://kick.smarterp.space");
+  });
+
+  it("strips a path from AUTH_URL down to the origin", () => {
+    vi.stubEnv("AUTH_URL", "https://kick.smarterp.space/api/auth");
+    expect(ensureAuthUrl()).toBe("https://kick.smarterp.space");
+  });
+
+  it("uses Coolify SERVICE_URL when AUTH_URL is missing", () => {
+    vi.stubEnv("SERVICE_URL_APP_3000", "https://kick.smarterp.space");
+    expect(ensureAuthUrl()).toBe("https://kick.smarterp.space");
+  });
+
+  it("ignores placeholder AUTH_URL and uses the Coolify public origin", () => {
+    vi.stubEnv("AUTH_URL", "https://replace_with_your_coolify_domain");
+    vi.stubEnv("SERVICE_URL_APP_3000", "https://kick.smarterp.space");
+    expect(ensureAuthUrl()).toBe("https://kick.smarterp.space");
+  });
+
+  it("falls back to the production origin when AUTH_URL is a Coolify placeholder", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("AUTH_URL", "https://replace_with_your_coolify_domain");
+    expect(ensureAuthUrl()).toBe("https://kick.smarterp.space");
+  });
+
+  it("falls back to the production origin when AUTH_URL is invalid", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("AUTH_URL", "://bad");
+    expect(ensureAuthUrl()).toBe("https://kick.smarterp.space");
   });
 });

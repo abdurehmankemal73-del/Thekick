@@ -34,6 +34,22 @@ function parseAbsoluteUrl(value: string, source: string): URL {
   }
 }
 
+function isPlaceholderHost(hostname: string) {
+  const host = hostname.toLowerCase();
+  return (
+    host === "0.0.0.0" ||
+    host.includes("replace_with") ||
+    host.includes("your_coolify") ||
+    host.includes("your-coolify")
+  );
+}
+
+function usableUrl(value: string, source: string): URL | undefined {
+  const url = parseAbsoluteUrl(value, source);
+  if (isPlaceholderHost(url.hostname)) return undefined;
+  return url;
+}
+
 function configuredAuthUrl() {
   return cleanEnv(process.env.AUTH_URL) ?? cleanEnv(process.env.NEXTAUTH_URL);
 }
@@ -59,26 +75,61 @@ function coolifyDeploymentUrl() {
   );
 }
 
+const PRODUCTION_ORIGIN = "https://kick.smarterp.space";
+
 /** Public origin for metadata. Empty AUTH_URL is treated as unset, never `new URL("")`. */
 export function getMetadataBase(): URL | undefined {
   const authUrl = configuredAuthUrl();
   if (authUrl) {
-    return parseAbsoluteUrl(authUrl, "AUTH_URL");
+    const parsed = usableUrl(authUrl, "AUTH_URL");
+    if (parsed) return parsed;
   }
 
   const vercelUrl = vercelDeploymentUrl();
   if (vercelUrl) {
-    return parseAbsoluteUrl(vercelUrl, "VERCEL_URL");
+    const parsed = usableUrl(vercelUrl, "VERCEL_URL");
+    if (parsed) return parsed;
   }
 
   const netlifyUrl = netlifyDeploymentUrl();
   if (netlifyUrl) {
-    return parseAbsoluteUrl(netlifyUrl, "URL");
+    const parsed = usableUrl(netlifyUrl, "URL");
+    if (parsed) return parsed;
   }
 
   const coolifyUrl = coolifyDeploymentUrl();
   if (coolifyUrl) {
-    return parseAbsoluteUrl(coolifyUrl, "COOLIFY_URL");
+    const parsed = usableUrl(coolifyUrl, "COOLIFY_URL");
+    if (parsed) return parsed;
+  }
+
+  return undefined;
+}
+
+/**
+ * Auth.js calls `new URL(AUTH_URL)` and rewrites request origins from it.
+ * Coolify often injects protocol-relative values (`//host.sslip.io`) which
+ * crash that parse and break sign-in cookies. Normalize to an origin.
+ */
+export function ensureAuthUrl(): string | undefined {
+  process.env.AUTH_TRUST_HOST = "true";
+
+  const candidates = [configuredAuthUrl(), coolifyDeploymentUrl()];
+  for (const raw of candidates) {
+    if (!raw) continue;
+    try {
+      const parsed = usableUrl(raw, "AUTH_URL");
+      if (!parsed) continue;
+      process.env.AUTH_URL = parsed.origin;
+      return parsed.origin;
+    } catch (error) {
+      console.error("[auth] Ignoring invalid AUTH_URL", error);
+    }
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    process.env.AUTH_URL = PRODUCTION_ORIGIN;
+    return PRODUCTION_ORIGIN;
   }
 
   return undefined;

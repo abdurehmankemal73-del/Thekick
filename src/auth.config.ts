@@ -1,13 +1,31 @@
 import type { NextAuthConfig } from "next-auth";
 import type { BeltLevel } from "@/db/schema";
+import { ensureAuthUrl } from "@/lib/site-url";
+
+ensureAuthUrl();
 
 export const authConfig = {
   trustHost: true,
+  secret: process.env.AUTH_SECRET,
   pages: {
     signIn: "/login",
+    error: "/login",
   },
   session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 7 },
   callbacks: {
+    redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      try {
+        const target = new URL(url);
+        if (target.hostname === "0.0.0.0") {
+          return baseUrl;
+        }
+        if (target.origin === new URL(baseUrl).origin) return url;
+      } catch {
+        return baseUrl;
+      }
+      return baseUrl;
+    },
     authorized({ auth, request }) {
       const { pathname } = request.nextUrl;
       const role = auth?.user?.role;

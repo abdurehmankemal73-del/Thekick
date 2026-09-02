@@ -33,22 +33,22 @@ services:
     ports:
       - "3000"
     environment:
-      - SERVICE_URL_APP_3000=https://kick.smarterp.space
-      - SERVICE_FQDN_APP_3000=https://kick.smarterp.space
-      - DATABASE_URL=postgresql://thekick:${POSTGRES_PASSWORD:-thekick}@db:5432/thekick
-      - AUTH_SECRET=${AUTH_SECRET}
-      - AUTH_URL=${AUTH_URL:-https://kick.smarterp.space}
-      - AUTH_TRUST_HOST=true
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - SEED_DEMO=false
-      - RUN_DB_SEED=${RUN_DB_SEED:-true}
-      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
-      - SMTP_PORT=${SMTP_PORT:-587}
-      - SMTP_SECURE=${SMTP_SECURE:-false}
-      - SMTP_USER=${SMTP_USER:-}
-      - SMTP_PASS=${SMTP_PASS:-}
-      - SMTP_FROM=${SMTP_FROM:-THE KICK <abdurehmankemal73@gmail.com>}
+      SERVICE_URL_APP_3000: "https://kick.smarterp.space"
+      SERVICE_FQDN_APP_3000: "https://kick.smarterp.space"
+      DATABASE_URL: "postgresql://thekick:${POSTGRES_PASSWORD:-thekick}@db:5432/thekick"
+      AUTH_SECRET: "${AUTH_SECRET}"
+      AUTH_URL: "${AUTH_URL:-https://kick.smarterp.space}"
+      AUTH_TRUST_HOST: "true"
+      ADMIN_EMAIL: "${ADMIN_EMAIL}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
+      SEED_DEMO: "false"
+      RUN_DB_SEED: "${RUN_DB_SEED:-true}"
+      SMTP_HOST: "${SMTP_HOST:-smtp.gmail.com}"
+      SMTP_PORT: "${SMTP_PORT:-587}"
+      SMTP_SECURE: "${SMTP_SECURE:-false}"
+      SMTP_USER: "${SMTP_USER:-}"
+      SMTP_PASS: "${SMTP_PASS:-}"
+      SMTP_FROM: "${SMTP_FROM:-THE KICK <abdurehmankemal73@gmail.com>}"
     healthcheck:
       test:
         [

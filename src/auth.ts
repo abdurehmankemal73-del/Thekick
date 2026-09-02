@@ -2,10 +2,9 @@ import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { authConfig } from "@/auth.config";
 import { getDb } from "@/db";
-import { accounts, sessions, users, verificationTokens } from "@/db/schema";
+import { users } from "@/db/schema";
 import { loginSchema } from "@/lib/validations";
 import { loginRateLimit, clearLoginAttempts } from "@/lib/rate-limit";
 
@@ -18,14 +17,6 @@ class AuthError extends CredentialsSignin {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  adapter: process.env.DATABASE_URL
-    ? DrizzleAdapter(getDb(), {
-        usersTable: users,
-        accountsTable: accounts,
-        sessionsTable: sessions,
-        verificationTokensTable: verificationTokens,
-      })
-    : undefined,
   providers: [
     Credentials({
       credentials: {

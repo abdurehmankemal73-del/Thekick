@@ -19,7 +19,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
+# Do not set HOSTNAME=0.0.0.0 — Auth.js treats it as the public host and
+# sign-in cookies/callbacks then target 0.0.0.0 instead of the domain.
+# next start binds with --hostname in package.json.
 ENV AUTH_URL=https://kick.smarterp.space
 ENV AUTH_TRUST_HOST=true
 ENV SEED_DEMO=false
