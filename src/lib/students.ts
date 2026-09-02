@@ -11,14 +11,42 @@ export async function approveStudent(admin: User, studentId: string) {
     throw new HttpError(404, "Student not found");
   }
   if (student.accountStatus === "ACTIVE" && student.approvalEmailSentAt) {
-    return { student, alreadyApproved: true as const, previewUrl: undefined };
+    return {
+      student,
+      alreadyApproved: true as const,
+      emailSent: true,
+      previewUrl: undefined,
+    };
   }
   if (student.accountStatus === "REJECTED") {
     throw new HttpError(400, "This registration was rejected. Edit the student to restore it first.");
   }
 
-  let messageId: string;
+  const now = new Date();
+  let updated = student;
+  if (student.accountStatus !== "ACTIVE") {
+    const [activated] = await db
+      .update(users)
+      .set({
+        accountStatus: "ACTIVE",
+        approvedAt: now,
+        rejectedAt: null,
+      })
+      .where(eq(users.id, student.id))
+      .returning();
+    updated = activated;
+
+    await writeAudit({
+      actorId: admin.id,
+      action: "STUDENT_APPROVE",
+      targetType: "user",
+      targetId: student.id,
+      metadata: { email: student.email },
+    });
+  }
+
   let previewUrl: string | undefined;
+  let emailError: string | undefined;
   try {
     const email = approvalEmail(student.fullName);
     const result = await sendMail({
@@ -27,42 +55,32 @@ export async function approveStudent(admin: User, studentId: string) {
       text: email.text,
       html: email.html,
     });
-    messageId = result.messageId;
     previewUrl = result.previewUrl;
+    const [withEmail] = await db
+      .update(users)
+      .set({ approvalEmailSentAt: new Date() })
+      .where(eq(users.id, student.id))
+      .returning();
+    updated = withEmail;
   } catch (error) {
-    const message =
+    emailError =
       error instanceof MailError
         ? error.message
-        : "Approval email could not be sent. The student was not approved.";
+        : "Notification email could not be sent.";
     console.error("Approval email failed", {
       studentId: student.id,
       email: student.email,
       error,
     });
-    throw new HttpError(502, message);
   }
 
-  const now = new Date();
-  const [updated] = await db
-    .update(users)
-    .set({
-      accountStatus: "ACTIVE",
-      approvedAt: now,
-      approvalEmailSentAt: now,
-      rejectedAt: null,
-    })
-    .where(eq(users.id, student.id))
-    .returning();
-
-  await writeAudit({
-    actorId: admin.id,
-    action: "STUDENT_APPROVE",
-    targetType: "user",
-    targetId: student.id,
-    metadata: { email: student.email, messageId },
-  });
-
-  return { student: updated, alreadyApproved: false as const, messageId, previewUrl };
+  return {
+    student: updated,
+    alreadyApproved: false as const,
+    emailSent: !emailError,
+    emailError,
+    previewUrl,
+  };
 }
 
 export async function rejectStudent(admin: User, studentId: string) {

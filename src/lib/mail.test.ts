@@ -71,6 +71,27 @@ describe("SMTP configuration", () => {
     expect(config.pass).toBe("abcdefghijklmnop");
   });
 
+  it("rejects a normal Gmail password before connecting", () => {
+    vi.stubEnv("SMTP_HOST", "smtp.gmail.com");
+    vi.stubEnv("SMTP_USER", "club@gmail.com");
+    vi.stubEnv("SMTP_PASS", "MyNormalGmailPassword");
+    expect(() => getMailConfig()).toThrow(/App Password/i);
+  });
+
+  it("treats Coolify SMTP_PASS placeholders as unconfigured", () => {
+    vi.stubEnv("SMTP_HOST", "smtp.gmail.com");
+    vi.stubEnv("SMTP_USER", "club@gmail.com");
+    vi.stubEnv("SMTP_PASS", "replace-with-gmail-app-password");
+    expect(() => getMailConfig()).toThrow(/App Password/i);
+  });
+
+  it("uses the address inside SMTP_USER display names", () => {
+    vi.stubEnv("SMTP_HOST", "smtp.gmail.com");
+    vi.stubEnv("SMTP_USER", "THE KICK <club@gmail.com>");
+    vi.stubEnv("SMTP_PASS", "abcd efgh ijkl mnop");
+    expect(getMailConfig().user).toBe("club@gmail.com");
+  });
+
   it("tells the admin to create a Gmail App Password when SMTP_PASS is missing", () => {
     vi.stubEnv("SMTP_HOST", "smtp.gmail.com");
     vi.stubEnv("SMTP_USER", "club@gmail.com");

@@ -16,6 +16,7 @@ const PLACEHOLDER_VALUES = new Set([
   "your-smtp-password",
   "your-gmail@gmail.com",
   "your-16-character-app-password",
+  "replace-with-gmail-app-password",
   "noreply@thekick.local",
   "noreply@example.com",
 ]);
@@ -33,9 +34,15 @@ function readEnv(name: string) {
   return value || undefined;
 }
 
+function extractEmail(value: string) {
+  const angled = value.match(/<([^>]+)>/);
+  return (angled ? angled[1] : value).trim();
+}
+
 function isPlaceholder(value: string) {
   const normalized = value.toLowerCase();
   if (PLACEHOLDER_VALUES.has(normalized)) return true;
+  if (normalized.startsWith("replace-with-")) return true;
   return [...PLACEHOLDER_VALUES].some((placeholder) => normalized.includes(placeholder));
 }
 
@@ -48,7 +55,7 @@ function normalizeHost(host: string) {
 }
 
 function isGmailUser(value: string | undefined) {
-  const email = value?.toLowerCase() ?? "";
+  const email = extractEmail(value ?? "").toLowerCase();
   return email.endsWith("@gmail.com") || email.endsWith("@googlemail.com");
 }
 
@@ -64,14 +71,22 @@ function intendsGmail() {
 }
 
 function gmailPass(value: string) {
-  return value.replaceAll(" ", "");
+  return value.replace(/[\s-]/g, "");
 }
+
+function looksLikeGmailAppPassword(value: string) {
+  return /^[a-z]{16}$/i.test(gmailPass(value));
+}
+
+const GMAIL_APP_PASSWORD_HELP =
+  "Gmail rejected the login. Create a Google App Password at https://myaccount.google.com/apppasswords and set SMTP_PASS to that 16-character password (spaces are OK). Do not use your normal Gmail password. 2-Step Verification must be on.";
 
 export function getMailConfig() {
   const requestedHost = readEnv("SMTP_HOST");
-  const user = readEnv("SMTP_USER");
+  const userRaw = readEnv("SMTP_USER");
   const pass = readEnv("SMTP_PASS");
-  const from = readEnv("SMTP_FROM") || user;
+  const from = readEnv("SMTP_FROM") || userRaw;
+  const user = userRaw ? extractEmail(userRaw) : undefined;
   const portRaw = readEnv("SMTP_PORT");
   const gmail = intendsGmail();
   const host = requestedHost ? normalizeHost(requestedHost) : gmail ? "smtp.gmail.com" : undefined;
@@ -91,9 +106,11 @@ export function getMailConfig() {
   }
 
   if (gmail && (!pass || isPlaceholder(pass))) {
-    throw new MailError(
-      "Gmail is selected but SMTP_PASS is missing. Create a Google App Password at https://myaccount.google.com/apppasswords and set SMTP_PASS to that 16-character password (not your normal Gmail password). 2-Step Verification must be on.",
-    );
+    throw new MailError(GMAIL_APP_PASSWORD_HELP);
+  }
+
+  if (gmail && pass && !looksLikeGmailAppPassword(pass)) {
+    throw new MailError(GMAIL_APP_PASSWORD_HELP);
   }
 
   if (missing.length > 0) {
@@ -223,10 +240,7 @@ export async function sendMail(input: {
     if (error instanceof MailError) throw error;
     const message = error instanceof Error ? error.message : "Email sending failed";
     if (/invalid login|eauth|username and password|badcredentials/i.test(message)) {
-      throw new MailError(
-        "Gmail rejected the login. Set SMTP_PASS to a Google App Password, not your normal Gmail password.",
-        error,
-      );
+      throw new MailError(GMAIL_APP_PASSWORD_HELP, error);
     }
     throw new MailError(message, error);
   }

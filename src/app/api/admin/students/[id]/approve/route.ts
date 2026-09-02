@@ -15,16 +15,20 @@ export async function POST(_request: Request, ctx: Ctx) {
     if (!result.student) {
       throw new HttpError(500, "Approval did not complete");
     }
+    const emailSent = Boolean(result.emailSent ?? result.student.approvalEmailSentAt);
     return json({
       student: adminStudent(result.student),
       alreadyApproved: result.alreadyApproved,
-      emailSent: Boolean(result.student.approvalEmailSentAt),
+      emailSent,
+      emailError: result.emailError,
       previewUrl: result.previewUrl,
       message: result.alreadyApproved
         ? "This student was already approved."
         : result.previewUrl
           ? "Student approved. Open the email preview from the server log or the returned preview URL (development mailbox)."
-          : "Student approved and notification email sent.",
+          : emailSent
+            ? "Student approved and notification email sent."
+            : `Student approved. Notification email was not sent: ${result.emailError ?? "check SMTP_PASS."}`,
     });
   } catch (error) {
     return errorResponse(error);

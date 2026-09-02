@@ -107,8 +107,16 @@ export default function AdminDashboardPage() {
                     onClick={async () => {
                       setBusyId(student.id);
                       try {
-                        const res = await api<{ message: string; previewUrl?: string }>(`/api/admin/students/${student.id}/approve`, { method: "POST" });
-                        toast.success(res.previewUrl ? `${res.message} ${res.previewUrl}` : res.message);
+                        const res = await api<{ message: string; previewUrl?: string; emailSent?: boolean }>(
+                          `/api/admin/students/${student.id}/approve`,
+                          { method: "POST" },
+                        );
+                        if (res.emailSent === false) {
+                          toast.success("Student approved.");
+                          toast.warning(res.message);
+                        } else {
+                          toast.success(res.previewUrl ? `${res.message} ${res.previewUrl}` : res.message);
+                        }
                         load();
                       } catch (error) {
                         toast.error(error instanceof ApiError ? error.message : "Approval email failed. The student was not approved.");
