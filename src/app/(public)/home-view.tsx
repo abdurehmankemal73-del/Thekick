@@ -86,33 +86,35 @@ export function HomeView({
             <p className="mt-3 w-full max-w-full whitespace-normal text-sm text-cream/80 [overflow-wrap:anywhere] sm:max-w-xl sm:text-base">
               {t("heroTag")}
             </p>
-            <div className="mt-8 flex flex-wrap items-stretch gap-3">
-              <Button
-                asChild
-                size="lg"
-                className="h-12 min-h-12 min-w-0 flex-1 justify-center px-3 sm:flex-none sm:px-5 md:px-6"
-              >
-                <Link href="/register">
-                  <Icon icon={UserPlus} />
-                  <span className="truncate">{t("joinKick")}</span>
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="gold"
-                className="h-12 min-h-12 min-w-0 flex-1 justify-center px-3 sm:flex-none sm:px-5 md:px-6"
-              >
-                <Link href="/login">
-                  <Icon icon={LogIn} />
-                  <span className="truncate">{t("studentLogin")}</span>
-                </Link>
-              </Button>
+            <div className="mt-8 flex flex-col items-center gap-3">
+              <div className="flex w-full flex-wrap items-stretch justify-center gap-3">
+                <Button
+                  asChild
+                  size="lg"
+                  className="h-12 min-h-12 min-w-0 flex-1 justify-center px-3 sm:flex-none sm:px-5 md:px-6"
+                >
+                  <Link href="/register">
+                    <Icon icon={UserPlus} />
+                    <span className="truncate">{t("joinKick")}</span>
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="gold"
+                  className="h-12 min-h-12 min-w-0 flex-1 justify-center px-3 sm:flex-none sm:px-5 md:px-6"
+                >
+                  <Link href="/login">
+                    <Icon icon={LogIn} />
+                    <span className="truncate">{t("studentLogin")}</span>
+                  </Link>
+                </Button>
+              </div>
               <Button
                 asChild
                 size="lg"
                 variant="outline"
-                className="h-12 min-h-12 min-w-0 flex-1 justify-center border-white/20 px-3 text-cream hover:bg-white/10 sm:flex-none sm:px-5 md:px-6"
+                className="h-12 min-h-12 justify-center border-white/20 px-5 text-cream hover:bg-white/10 md:px-6"
               >
                 <Link href="/about">
                   <Icon icon={Info} />
