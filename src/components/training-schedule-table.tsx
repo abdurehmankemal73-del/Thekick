@@ -18,13 +18,13 @@ export function TrainingScheduleTable({ light = false }: { light?: boolean }) {
     <div
       className={cn(
         "mt-5 overflow-hidden rounded-xl",
-        light ? "bg-surface ring-1 ring-line" : "bg-black/20 ring-1 ring-white/10",
+        light ? "bg-surface ring-1 ring-line" : "bg-black/10 ring-1 ring-white/15",
       )}
     >
       <div
         className={cn(
           "grid grid-cols-[1fr_auto] items-center gap-4 px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.22em]",
-          light ? "bg-white text-muted" : "bg-white/5 text-cream/45",
+          light ? "bg-white text-muted" : "bg-white/5 text-cream/55",
         )}
       >
         <span>{t("dayHeader")}</span>
