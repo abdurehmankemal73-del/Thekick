@@ -56,7 +56,17 @@ function persistDismiss() {
   }
 }
 
-export function requestInstallHelp() {
+export async function requestInstallHelp() {
+  if (isStandaloneDisplay()) return;
+  const promptEvent = readDeferredPrompt();
+  if (promptEvent) {
+    await promptEvent.prompt();
+    const choice = await promptEvent.userChoice;
+    window.__THE_KICK_DEFERRED_PROMPT = undefined;
+    if (choice.outcome === "accepted") persistDismiss();
+    window.dispatchEvent(new Event(BIP_EVENT));
+    return;
+  }
   window.dispatchEvent(new Event(SHOW_EVENT));
 }
 
@@ -132,29 +142,12 @@ function InstallPrompt() {
   useEffect(() => {
     if (isStandaloneDisplay()) return;
 
-    const next = readDeferredPrompt();
-    if (next) {
-      setPromptEvent(next);
-      setMode("android");
-    } else if (!wasDismissed()) {
-      if (isIosDevice() && !isIosSafari()) setMode("safari-needed");
-      else if (isIosSafari()) setMode("ios");
-    }
-
     const onBip = () => {
-      const captured = readDeferredPrompt();
-      if (!captured) return;
-      setPromptEvent(captured);
-      setMode("android");
+      setPromptEvent(readDeferredPrompt());
     };
     const onShow = () => showForPlatform();
     window.addEventListener(BIP_EVENT, onBip);
     window.addEventListener(SHOW_EVENT, onShow);
-
-    const timer = window.setTimeout(() => {
-      if (isStandaloneDisplay() || wasDismissed() || readDeferredPrompt() || isIosDevice()) return;
-      setMode((current) => (current === "hidden" ? "android-menu" : current));
-    }, 2500);
 
     if ("serviceWorker" in navigator) {
       const secure =
@@ -169,7 +162,6 @@ function InstallPrompt() {
     return () => {
       window.removeEventListener(BIP_EVENT, onBip);
       window.removeEventListener(SHOW_EVENT, onShow);
-      window.clearTimeout(timer);
     };
   }, []);
 

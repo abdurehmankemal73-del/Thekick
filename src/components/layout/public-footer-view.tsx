@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarDays, Home, Info, LogIn, Mail, MapPin, Megaphone, Phone, UserPlus } from "lucide-react";
+import { CalendarDays, Download, Home, Info, LogIn, Mail, MapPin, Megaphone, Phone, UserPlus } from "lucide-react";
 import { CLUB, FOOTER_CONTACT } from "@/lib/constants";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
+import { requestInstallHelp } from "@/components/pwa";
 import { useI18n } from "@/i18n/provider";
 
 export function PublicFooterView() {
@@ -71,6 +72,14 @@ export function PublicFooterView() {
                 {link.label}
               </Link>
             ))}
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 text-left text-cream/75 transition hover:translate-x-0.5 hover:text-red"
+              onClick={() => void requestInstallHelp()}
+            >
+              <Icon icon={Download} className="text-gold" />
+              {t("installApp")}
+            </button>
           </nav>
         </div>
 

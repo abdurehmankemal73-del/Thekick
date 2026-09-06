@@ -66,16 +66,6 @@ export function PublicHeader() {
           <Logo size="header" light />
         </Link>
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-          {canInstall ? (
-            <button
-              type="button"
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-white/20 text-cream transition hover:border-gold hover:text-gold"
-              aria-label={t("installApp")}
-              onClick={() => requestInstallHelp()}
-            >
-              <Icon icon={Download} size="md" />
-            </button>
-          ) : null}
           <ColorSwitcher light className="h-11 w-11" />
           <LanguageSwitcher light />
           <button
@@ -129,6 +119,19 @@ export function PublicHeader() {
                   {link.label}
                 </Link>
               ))}
+              {canInstall ? (
+                <button
+                  type="button"
+                  className="flex min-h-11 w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm font-medium text-cream/80 transition hover:bg-white/10 hover:text-gold"
+                  onClick={() => {
+                    setOpen(false);
+                    void requestInstallHelp();
+                  }}
+                >
+                  <Icon icon={Download} className="text-gold" />
+                  {t("installApp")}
+                </button>
+              ) : null}
               <div className="flex flex-col gap-2 pt-3 sm:flex-row">
                 {data?.user ? (
                   <Button asChild className="h-12 min-h-12 w-full justify-center sm:w-auto">
