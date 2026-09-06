@@ -55,6 +55,13 @@ body {
   font-family: var(--font-sans), var(--font-ethiopic), system-ui, sans-serif;
 }
 
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
 h1,
 h2,
 h3,

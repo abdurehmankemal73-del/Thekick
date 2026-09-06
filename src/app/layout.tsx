@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import localFont from "next/font/local";
 import { Providers } from "@/components/providers";
 import { CLUB } from "@/lib/constants";
+import { PWA_THEME_COLOR } from "@/lib/pwa";
 import { getMetadataBase } from "@/lib/site-url";
 import "./globals.css";
 
@@ -30,13 +31,25 @@ const notoEthiopic = localFont({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: PWA_THEME_COLOR,
+  colorScheme: "light dark",
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
   metadataBase: getMetadataBase(),
+  applicationName: CLUB.shortName,
   title: {
     default: `${CLUB.shortName} | ${CLUB.fullName}`,
     template: `%s | ${CLUB.shortName}`,
   },
   description: `${CLUB.fullName} — ${CLUB.federation}. Discipline, strength, respect.`,
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: CLUB.shortName,
+  },
   openGraph: {
     title: `${CLUB.shortName} | ${CLUB.fullName}`,
     description: `${CLUB.federation} club management and training.`,
