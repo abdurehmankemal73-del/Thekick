@@ -213,7 +213,7 @@ function AdminStudentsInner() {
                   name="beltLevel"
                   defaultValue={editing.beltLevel ?? "WHITE"}
                   labelledBy="edit-beltLevel-label"
-                  className="mt-1.5 max-h-64 overflow-y-auto pr-1"
+                  className="mt-1.5"
                 />
               </div>
               <div>

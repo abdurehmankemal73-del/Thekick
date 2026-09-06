@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Check } from "lucide-react";
 import type { BeltLevel } from "@/db/schema";
 import { BELT_LEVELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { Select } from "@/components/ui/fields";
 import { useI18n } from "@/i18n/provider";
 
 type BeltVisual = {
@@ -90,58 +90,36 @@ export function BeltLevelList({
   describedBy?: string;
   className?: string;
 }) {
-  const { tBelt } = useI18n();
+  const { t, tBelt } = useI18n();
   const controlled = value !== undefined;
   const [internal, setInternal] = useState<BeltLevel | "">(defaultValue ?? "");
   const selectedBelt = controlled ? value : internal;
 
   return (
-    <div
-      role="radiogroup"
-      aria-labelledby={labelledBy}
-      aria-describedby={describedBy}
-      aria-required={required || undefined}
-      className={cn("grid grid-cols-1 gap-2 sm:grid-cols-2", className)}
-    >
-      {BELT_LEVELS.map((belt) => {
-        const selected = selectedBelt === belt;
-        return (
-          <label
-            key={belt}
-            className={cn(
-              "flex min-h-14 cursor-pointer items-center gap-3 rounded-lg border bg-white px-3 py-3 text-ink shadow-sm transition",
-              "hover:border-red/40 hover:shadow",
-              selected
-                ? "border-red bg-red/5 ring-2 ring-red"
-                : "border-line",
-            )}
-          >
-            <input
-              type="radio"
-              name={name}
-              value={belt}
-              required={required}
-              checked={selected}
-              onChange={() => {
-                if (!controlled) setInternal(belt);
-                onChange?.(belt);
-              }}
-              className="sr-only"
-            />
-            <BeltMark belt={belt} size="lg" />
-            <span className="min-w-0 flex-1 text-sm font-semibold leading-snug">{tBelt(belt)}</span>
-            <span
-              className={cn(
-                "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border",
-                selected ? "border-red bg-red text-white" : "border-line text-transparent",
-              )}
-              aria-hidden
-            >
-              <Check className="h-3.5 w-3.5" strokeWidth={3} />
-            </span>
-          </label>
-        );
-      })}
+    <div className={cn("flex items-center gap-3", className)}>
+      {selectedBelt ? <BeltMark belt={selectedBelt} size="lg" /> : null}
+      <Select
+        id={name}
+        name={name}
+        required={required}
+        aria-labelledby={labelledBy}
+        aria-describedby={describedBy}
+        value={controlled ? value : selectedBelt}
+        onChange={(event) => {
+          const next = event.target.value as BeltLevel | "";
+          if (!controlled) setInternal(next);
+          if (next) onChange?.(next);
+        }}
+      >
+        <option value="" disabled={required}>
+          {t("selectBelt")}
+        </option>
+        {BELT_LEVELS.map((belt) => (
+          <option key={belt} value={belt}>
+            {tBelt(belt)}
+          </option>
+        ))}
+      </Select>
     </div>
   );
 }
