@@ -8,14 +8,12 @@ import { ThemeProvider } from "@/theme/provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
-      <ThemeProvider>
-        <LanguageProvider>
-          {children}
-          <Pwa />
-          <Toaster richColors position="top-right" />
-        </LanguageProvider>
-      </ThemeProvider>
-    </SessionProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <SessionProvider>{children}</SessionProvider>
+        <Pwa />
+        <Toaster richColors position="top-right" />
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

@@ -1,5 +1,5 @@
-const CACHE = "the-kick-v1";
-const PRECACHE = ["/", "/offline", "/icons/icon-192.png", "/icons/icon-512.png", "/logo.jpg"];
+const CACHE = "the-kick-v2";
+const PRECACHE = ["/offline", "/icons/icon-192.png", "/icons/icon-512.png", "/logo.jpg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -23,7 +23,8 @@ function isBypass(url) {
   return (
     url.pathname.startsWith("/api/") ||
     url.pathname.startsWith("/auth/") ||
-    url.pathname === "/sw.js"
+    url.pathname === "/sw.js" ||
+    url.pathname === "/manifest.webmanifest"
   );
 }
 
@@ -37,14 +38,8 @@ self.addEventListener("fetch", (event) => {
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
-        .then((response) => {
-          if (response.ok) {
-            const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put(request, copy));
-          }
-          return response;
-        })
-        .catch(async () => (await caches.match(request)) || (await caches.match("/offline"))),
+        .then((response) => response)
+        .catch(async () => (await caches.match("/offline")) || Response.error()),
     );
     return;
   }

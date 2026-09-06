@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { CalendarDays, Home, Info, LayoutDashboard, LogIn, Mail, Megaphone, Menu, UserPlus, X } from "lucide-react";
+import { CalendarDays, Download, Home, Info, LayoutDashboard, LogIn, Mail, Megaphone, Menu, UserPlus, X } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,14 @@ import { ColorSwitcher } from "@/components/color-switcher";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useI18n } from "@/i18n/provider";
 import { cn } from "@/lib/utils";
+import { isStandaloneDisplay, requestInstallHelp } from "@/components/pwa";
 import { CLUB } from "@/lib/constants";
 
 export function PublicHeader() {
   const pathname = usePathname();
   const { data } = useSession();
   const [open, setOpen] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
   const { t } = useI18n();
   const menuId = useId();
   const dashboard =
@@ -34,6 +36,10 @@ export function PublicHeader() {
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    setCanInstall(!isStandaloneDisplay());
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -60,6 +66,16 @@ export function PublicHeader() {
           <Logo size="header" light />
         </Link>
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          {canInstall ? (
+            <button
+              type="button"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-white/20 text-cream transition hover:border-gold hover:text-gold"
+              aria-label={t("installApp")}
+              onClick={() => requestInstallHelp()}
+            >
+              <Icon icon={Download} size="md" />
+            </button>
+          ) : null}
           <ColorSwitcher light className="h-11 w-11" />
           <LanguageSwitcher light />
           <button

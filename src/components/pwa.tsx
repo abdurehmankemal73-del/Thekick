@@ -7,25 +7,37 @@ import { Icon } from "@/components/ui/icon";
 import { useI18n } from "@/i18n/provider";
 
 const DISMISS_KEY = "the-kick-pwa-dismissed";
+const SHOW_EVENT = "thekick-show-install";
+const BIP_EVENT = "thekick-bip";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
-function isStandalone() {
+declare global {
+  interface Window {
+    __THE_KICK_DEFERRED_PROMPT?: BeforeInstallPromptEvent;
+  }
+}
+
+export function isStandaloneDisplay() {
   if (typeof window === "undefined") return false;
   return (
     window.matchMedia("(display-mode: standalone)").matches ||
+    window.matchMedia("(display-mode: fullscreen)").matches ||
     ("standalone" in navigator && Boolean((navigator as Navigator & { standalone?: boolean }).standalone))
   );
 }
 
-function isIosSafari() {
+function isIosDevice() {
   if (typeof navigator === "undefined") return false;
   const ua = navigator.userAgent;
-  const ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  return ios && !/CriOS|FxiOS|EdgiOS/.test(ua);
+  return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function isIosSafari() {
+  return isIosDevice() && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(navigator.userAgent);
 }
 
 function wasDismissed() {
@@ -36,12 +48,20 @@ function wasDismissed() {
   }
 }
 
-function dismiss() {
+function persistDismiss() {
   try {
     window.localStorage.setItem(DISMISS_KEY, "1");
   } catch {
     /* ignore quota / private mode */
   }
+}
+
+export function requestInstallHelp() {
+  window.dispatchEvent(new Event(SHOW_EVENT));
+}
+
+function readDeferredPrompt() {
+  return window.__THE_KICK_DEFERRED_PROMPT ?? null;
 }
 
 function InstallBanner({
@@ -85,45 +105,92 @@ function InstallBanner({
 function InstallPrompt() {
   const { t } = useI18n();
   const [promptEvent, setPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
-  const [showIos, setShowIos] = useState(false);
-  const [hidden, setHidden] = useState(true);
+  const [mode, setMode] = useState<"hidden" | "ios" | "safari-needed" | "android" | "android-menu">("hidden");
 
-  useEffect(() => {
-    if (isStandalone() || wasDismissed()) return;
-
-    if (isIosSafari()) {
-      setShowIos(true);
-      setHidden(false);
+  function showForPlatform(event?: BeforeInstallPromptEvent | null) {
+    if (isStandaloneDisplay()) {
+      setMode("hidden");
       return;
     }
+    const next = event ?? readDeferredPrompt();
+    if (next) {
+      setPromptEvent(next);
+      setMode("android");
+      return;
+    }
+    if (isIosDevice() && !isIosSafari()) {
+      setMode("safari-needed");
+      return;
+    }
+    if (isIosSafari()) {
+      setMode("ios");
+      return;
+    }
+    setMode("android-menu");
+  }
 
-    const onPrompt = (event: Event) => {
-      event.preventDefault();
-      setPromptEvent(event as BeforeInstallPromptEvent);
-      setHidden(false);
+  useEffect(() => {
+    if (isStandaloneDisplay()) return;
+
+    const next = readDeferredPrompt();
+    if (next) {
+      setPromptEvent(next);
+      setMode("android");
+    } else if (!wasDismissed()) {
+      if (isIosDevice() && !isIosSafari()) setMode("safari-needed");
+      else if (isIosSafari()) setMode("ios");
+    }
+
+    const onBip = () => {
+      const captured = readDeferredPrompt();
+      if (!captured) return;
+      setPromptEvent(captured);
+      setMode("android");
     };
-    window.addEventListener("beforeinstallprompt", onPrompt);
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
+    const onShow = () => showForPlatform();
+    window.addEventListener(BIP_EVENT, onBip);
+    window.addEventListener(SHOW_EVENT, onShow);
+
+    const timer = window.setTimeout(() => {
+      if (isStandaloneDisplay() || wasDismissed() || readDeferredPrompt() || isIosDevice()) return;
+      setMode((current) => (current === "hidden" ? "android-menu" : current));
+    }, 2500);
+
+    if ("serviceWorker" in navigator) {
+      const secure =
+        window.location.protocol === "https:" ||
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1";
+      if (secure) {
+        void navigator.serviceWorker.register("/sw.js", { scope: "/", updateViaCache: "none" });
+      }
+    }
+
+    return () => {
+      window.removeEventListener(BIP_EVENT, onBip);
+      window.removeEventListener(SHOW_EVENT, onShow);
+      window.clearTimeout(timer);
+    };
   }, []);
 
   function close() {
-    dismiss();
-    setHidden(true);
-    setPromptEvent(null);
-    setShowIos(false);
+    persistDismiss();
+    setMode("hidden");
   }
 
   async function install() {
     if (!promptEvent) return;
     await promptEvent.prompt();
     const choice = await promptEvent.userChoice;
-    if (choice.outcome === "accepted") dismiss();
-    close();
+    window.__THE_KICK_DEFERRED_PROMPT = undefined;
+    setPromptEvent(null);
+    if (choice.outcome === "accepted") persistDismiss();
+    setMode("hidden");
   }
 
-  if (hidden) return null;
+  if (mode === "hidden") return null;
 
-  if (showIos) {
+  if (mode === "ios") {
     return (
       <InstallBanner
         title={t("installIosTitle")}
@@ -139,35 +206,33 @@ function InstallPrompt() {
     );
   }
 
-  if (!promptEvent) return null;
+  if (mode === "safari-needed") {
+    return (
+      <InstallBanner title={t("installOpenSafari")} body={t("installOpenSafariBody")} onClose={close} />
+    );
+  }
+
+  if (mode === "android") {
+    return (
+      <InstallBanner
+        title={t("installApp")}
+        body={t("installAppBody")}
+        action={
+          <Button size="sm" onClick={install}>
+            <Icon icon={Download} />
+            {t("installNow")}
+          </Button>
+        }
+        onClose={close}
+      />
+    );
+  }
 
   return (
-    <InstallBanner
-      title={t("installApp")}
-      body={t("installAppBody")}
-      action={
-        <Button size="sm" onClick={install}>
-          <Icon icon={Download} />
-          {t("installNow")}
-        </Button>
-      }
-      onClose={close}
-    />
+    <InstallBanner title={t("installAndroidMenu")} body={t("installAndroidMenuBody")} onClose={close} />
   );
 }
 
 export function Pwa() {
-  useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
-    const secure =
-      window.location.protocol === "https:" || window.location.hostname === "localhost";
-    if (!secure) return;
-    if (process.env.NODE_ENV !== "production" && window.location.hostname === "localhost") {
-      return;
-    }
-
-    void navigator.serviceWorker.register("/sw.js", { scope: "/", updateViaCache: "none" });
-  }, []);
-
   return <InstallPrompt />;
 }

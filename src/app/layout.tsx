@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import localFont from "next/font/local";
 import { Providers } from "@/components/providers";
 import { CLUB } from "@/lib/constants";
-import { PWA_THEME_COLOR } from "@/lib/pwa";
+import { PWA_BOOTSTRAP_SCRIPT, PWA_THEME_COLOR } from "@/lib/pwa";
 import { getMetadataBase } from "@/lib/site-url";
 import "./globals.css";
 
@@ -70,11 +70,16 @@ export default function RootLayout({
       className={`${inter.variable} ${oswald.variable} ${notoEthiopic.variable} h-full`}
     >
       <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content={CLUB.shortName} />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <script
           dangerouslySetInnerHTML={{
             __html: `try{var t=localStorage.getItem("the-kick-theme");if(t==="classic"||t==="mint")document.documentElement.dataset.theme=t}catch(e){}`,
           }}
         />
+        <script dangerouslySetInnerHTML={{ __html: PWA_BOOTSTRAP_SCRIPT }} />
       </head>
       <body className="min-h-full bg-surface text-ink antialiased">
         <Providers>{children}</Providers>

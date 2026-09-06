@@ -30,6 +30,10 @@ export const en = {
   installNow: "Install",
   installIosTitle: "Add to Home Screen",
   installIosBody: "Tap Share, then Add to Home Screen.",
+  installAndroidMenu: "Install THE KICK",
+  installAndroidMenuBody: "Tap the browser menu, then Install app or Add to Home screen.",
+  installOpenSafari: "Open this page in Safari",
+  installOpenSafariBody: "iPhone Chrome cannot install apps. Open kick.smarterp.space in Safari, tap Share, then Add to Home Screen.",
   offlineTitle: "You are offline",
   offlineBody: "Check your connection, then open the club site again.",
 
@@ -242,6 +246,10 @@ const om: Record<MessageKey, string> = {
   installNow: "Fe'i",
   installIosTitle: "Fuula duraa irratti galchi",
   installIosBody: "Share tuqi, itti aansuun Add to Home Screen filadhu.",
+  installAndroidMenu: "THE KICK fe'i",
+  installAndroidMenuBody: "Menu browser tuqi, itti aansuun Install app ykn Add to Home screen filadhu.",
+  installOpenSafari: "Fuula kana Safari keessatti bani",
+  installOpenSafariBody: "Chrome iPhone irratti app fe'uu hin danda'u. kick.smarterp.space Safari keessatti bani, Share tuqi, Add to Home Screen filadhu.",
   offlineTitle: "Cimdaa hin jiru",
   offlineBody: "Cimdaa kee ilaali, ergasii fuula garaa deebi'ii bani.",
 
@@ -451,6 +459,10 @@ const am: Record<MessageKey, string> = {
   installNow: "ጫን",
   installIosTitle: "ወደ መነሻ ማያ ጨምር",
   installIosBody: "Share ን ይንኩ፣ ከዚያ Add to Home Screen ይምረጡ።",
+  installAndroidMenu: "THE KICK ይጫኑ",
+  installAndroidMenuBody: "የአሳሹን ምናሌ ይንኩ፣ ከዚያ Install app ወይም Add to Home screen ይምረጡ።",
+  installOpenSafari: "ይህን ገጽ በ Safari ይክፈቱ",
+  installOpenSafariBody: "በ iPhone Chrome መተግበሪያ መጫን አይቻልም። Safari ውስጥ ይክፈቱ፣ Share ከዚያ Add to Home Screen።",
   offlineTitle: "ከመስመር ውጭ ነዎት",
   offlineBody: "ግንኙነትዎን ይፈትሹ፣ ከዚያ ድህረ ገጹን እንደገና ይክፈቱ።",
 
@@ -659,6 +671,10 @@ const so: Record<MessageKey, string> = {
   installNow: "Rakib",
   installIosTitle: "Ku dar shaashadda guriga",
   installIosBody: "Taabo Share, kadib dooro Add to Home Screen.",
+  installAndroidMenu: "Rakib THE KICK",
+  installAndroidMenuBody: "Taabo menu-ga biraawsarka, kadib dooro Install app ama Add to Home screen.",
+  installOpenSafari: "Boggan ku fur Safari",
+  installOpenSafariBody: "Chrome ee iPhone ma rakibi karo app. kick.smarterp.space ku fur Safari, taabo Share, kadib Add to Home Screen.",
   offlineTitle: "Ma ku xirnidin internetka",
   offlineBody: "Hubi xiriirkaaga, kadib mar kale fur bogga naadiga.",
 
