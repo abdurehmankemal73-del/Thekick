@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: thekick
       POSTGRES_DB: thekick
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
       - thekick_pg_dev:/var/lib/postgresql/data
     healthcheck:
@@ -18,6 +18,3 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-
-volumes:
-  thekick_pg_dev:

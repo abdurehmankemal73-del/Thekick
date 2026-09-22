@@ -7,6 +7,7 @@ import {
   permissionCreateSchema,
   registerSchema,
   gradeSchema,
+  paymentMethodSchema,
 } from "@/lib/validations";
 import { BELT_LEVELS } from "@/lib/constants";
 import { sameBeltMember } from "@/lib/dtos";
@@ -237,5 +238,33 @@ describe("login rate limit", () => {
     }
     expect(loginRateLimit(key).ok).toBe(false);
     clearLoginAttempts(key);
+  });
+});
+
+describe("payment method validation", () => {
+  it("accepts a complete bank account", () => {
+    expect(
+      paymentMethodSchema.safeParse({
+        id: "cbe",
+        label: "CBE Bank",
+        accountName: "Abdurehman kemal",
+        accountNumber: "1000611136033",
+        logoUrl: "/images/cbe-logo.png",
+        enabled: true,
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a missing account number", () => {
+    expect(
+      paymentMethodSchema.safeParse({
+        id: "cbe",
+        label: "CBE Bank",
+        accountName: "Abdurehman kemal",
+        accountNumber: "",
+        logoUrl: "/images/cbe-logo.png",
+        enabled: true,
+      }).success,
+    ).toBe(false);
   });
 });

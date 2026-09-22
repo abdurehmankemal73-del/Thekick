@@ -16,7 +16,7 @@ fi
 export AUTH_URL
 export AUTH_TRUST_HOST=true
 
-npx drizzle-kit migrate
+npm run db:migrate
 
 if [ "${RUN_DB_SEED:-true}" = "true" ]; then
   npx tsx src/db/seed.ts || echo "Warning: database seed failed; starting the app anyway."

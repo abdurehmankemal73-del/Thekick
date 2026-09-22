@@ -151,6 +151,15 @@ export const adminStudentUpdateSchema = z.object({
   accountStatus: z.enum(["PENDING", "ACTIVE", "SUSPENDED", "REJECTED"]).optional(),
 });
 
+export const paymentMethodSchema = z.object({
+  id: z.string().trim().min(1).max(80),
+  label: z.string().trim().min(2, "Enter a bank or service name").max(80),
+  accountName: z.string().trim().min(2, "Enter the account name").max(200),
+  accountNumber: z.string().trim().min(3, "Enter the account number").max(64),
+  logoUrl: z.string().trim().max(500),
+  enabled: z.boolean(),
+});
+
 export const clubSettingsSchema = z.object({
   email: z.email(),
   phone: z.string().trim().min(5).max(64),
@@ -172,10 +181,11 @@ export const clubSettingsSchema = z.object({
       z.object({
         name: z.string().trim().min(2),
         title: z.string().trim().min(2),
-        bio: z.string().trim().min(10),
+        bio: z.string().trim().max(4000),
       }),
     )
     .optional(),
+  paymentMethods: z.array(paymentMethodSchema).max(12).optional(),
 });
 
 export function fieldErrors(error: z.ZodError) {

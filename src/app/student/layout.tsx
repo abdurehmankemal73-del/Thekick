@@ -9,6 +9,7 @@ import {
   Megaphone,
   User,
   Users,
+  Wallet,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { useI18n } from "@/i18n/provider";
@@ -21,6 +22,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
     { href: "/student/grades", label: t("myGrades"), icon: GraduationCap },
     { href: "/student/members", label: t("sameBelt"), icon: Users },
     { href: "/student/permission", label: t("permission"), icon: ClipboardList },
+    { href: "/student/pay", label: t("navPay"), icon: Wallet },
     { href: "/student/announcements", label: t("announcements"), icon: Megaphone },
     { href: "/calendar", label: t("navCalendar"), icon: CalendarDays },
     { href: "/", label: t("navHome"), icon: Home },

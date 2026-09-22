@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarDays, Download, Home, Info, LogIn, Mail, MapPin, Megaphone, Phone, UserPlus } from "lucide-react";
+import { CalendarDays, Download, Home, Info, LogIn, Mail, MapPin, Megaphone, Phone, UserPlus, Wallet } from "lucide-react";
 import { CLUB, FOOTER_CONTACT } from "@/lib/constants";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ export function PublicFooterView() {
     { href: "/news", label: t("navNews"), icon: Megaphone },
     { href: "/calendar", label: t("navCalendar"), icon: CalendarDays },
     { href: "/contact", label: t("navContact"), icon: Mail },
+    { href: "/pay", label: t("navPay"), icon: Wallet },
     { href: "/register", label: t("joinKick"), icon: UserPlus },
     { href: "/login", label: t("studentLogin"), icon: LogIn },
   ];

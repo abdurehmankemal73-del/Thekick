@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { CalendarDays, Download, Home, Info, LayoutDashboard, LogIn, Mail, Megaphone, Menu, UserPlus, X } from "lucide-react";
+import { CalendarDays, Download, Home, Info, LayoutDashboard, LogIn, Mail, Megaphone, Menu, UserPlus, Wallet, X } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ export function PublicHeader() {
     { href: "/", label: t("navHome"), icon: Home },
     { href: "/about", label: t("navAbout"), icon: Info },
     { href: "/contact", label: t("navContact"), icon: Mail },
+    { href: "/pay", label: t("navPay"), icon: Wallet },
     { href: "/calendar", label: t("navCalendar"), icon: CalendarDays },
     { href: "/news", label: t("navNews"), icon: Megaphone },
   ];

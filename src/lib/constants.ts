@@ -1,4 +1,4 @@
-import type { BeltLevel } from "@/db/schema";
+import type { BeltLevel, PaymentMethod } from "@/db/schema";
 
 export const CLUB = {
   shortName: "THE KICK",
@@ -95,6 +95,49 @@ export const PASSWORD_HINT =
 export const PAGE_SIZE = 12;
 export const MAX_PAGE_SIZE = 50;
 
+export const ACCOUNT_HOLDER_NAME = "Abdurehman kemal";
+
+export const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
+  {
+    id: "cbe",
+    label: "CBE Bank",
+    accountName: ACCOUNT_HOLDER_NAME,
+    accountNumber: "1000611136033",
+    logoUrl: "/images/cbe-logo.png",
+    enabled: true,
+  },
+  {
+    id: "awash",
+    label: "Awash Bank",
+    accountName: ACCOUNT_HOLDER_NAME,
+    accountNumber: "14251412360700",
+    logoUrl: "/images/Awash-logo.png",
+    enabled: true,
+  },
+  {
+    id: "telebirr",
+    label: "Tele-birr",
+    accountName: ACCOUNT_HOLDER_NAME,
+    accountNumber: "0946293933",
+    logoUrl: "/images/tele-birr-logo.png",
+    enabled: true,
+  },
+  {
+    id: "ebirr",
+    label: "E-birr / Coopay",
+    accountName: ACCOUNT_HOLDER_NAME,
+    accountNumber: "0946293933",
+    logoUrl: "/images/e-birr-logo.png",
+    enabled: true,
+  },
+];
+
+export const PAYMENT_LOGO_OPTIONS = DEFAULT_PAYMENT_METHODS.map((method) => ({
+  id: method.id,
+  label: method.label,
+  logoUrl: method.logoUrl,
+}));
+
 export const DEFAULT_CLUB_SETTINGS = {
   email: "abdurehmankemal73@gmail.com",
   phone: "0946293933",
@@ -126,4 +169,5 @@ export const DEFAULT_CLUB_SETTINGS = {
       bio: "",
     },
   ],
+  paymentMethods: DEFAULT_PAYMENT_METHODS,
 };

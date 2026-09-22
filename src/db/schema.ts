@@ -334,6 +334,15 @@ export const auditLogs = pgTable(
   ],
 );
 
+export type PaymentMethod = {
+  id: string;
+  label: string;
+  accountName: string;
+  accountNumber: string;
+  logoUrl: string;
+  enabled: boolean;
+};
+
 export const clubSettings = pgTable("club_settings", {
   id: text("id").primaryKey().default("default"),
   email: varchar("email", { length: 255 }).notNull(),
@@ -353,6 +362,10 @@ export const clubSettings = pgTable("club_settings", {
   achievements: text("achievements").notNull(),
   instructors: jsonb("instructors")
     .$type<Array<{ name: string; title: string; bio: string }>>()
+    .notNull()
+    .default([]),
+  paymentMethods: jsonb("payment_methods")
+    .$type<PaymentMethod[]>()
     .notNull()
     .default([]),
   updatedAt: timestamp("updated_at", { mode: "date" })

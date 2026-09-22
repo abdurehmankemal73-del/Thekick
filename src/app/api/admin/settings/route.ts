@@ -22,6 +22,7 @@ export async function PATCH(request: Request) {
     const admin = await requireAdmin();
     const body = await readJson<unknown>(request);
     const data = clubSettingsSchema.parse(body);
+    const existing = await getClubSettings();
 
     const payload = {
       email: data.email,
@@ -39,7 +40,8 @@ export async function PATCH(request: Request) {
       itfInfo: data.itfInfo,
       activities: data.activities,
       achievements: data.achievements,
-      instructors: data.instructors ?? [],
+      instructors: data.instructors ?? existing.instructors ?? [],
+      paymentMethods: data.paymentMethods ?? existing.paymentMethods,
     };
 
     await db

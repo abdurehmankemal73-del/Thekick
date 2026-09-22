@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
-import { CalendarClock, Mail, MapPin, Phone, Send } from "lucide-react";
+import { CalendarClock, Mail, MapPin, Phone, Send, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -109,6 +110,12 @@ export default function ContactPage() {
             </div>
           </li>
         </ul>
+        <Button asChild variant="outline" className="mt-8">
+          <Link href="/pay">
+            <Icon icon={Wallet} />
+            {t("payTitle")}
+          </Link>
+        </Button>
       </div>
       <Card>
         <form onSubmit={onSubmit} className="space-y-4" noValidate>
