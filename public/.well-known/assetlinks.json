@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "space.smarterp.kick.twa",
+      "sha256_cert_fingerprints": [
+        "9E:9F:20:60:5E:39:67:42:0C:58:05:4C:2F:AB:B0:2C:50:8E:7E:9E:4A:FB:9B:61:7D:55:15:FF:69:30:DB:07"
+      ]
+    }
+  }
+]

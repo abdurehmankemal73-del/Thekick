@@ -53,3 +53,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Bubblewrap signing key (keep this; do not commit it)
+/twa/android.keystore
+/twa/.signing-password
+/twa/app/build/
+/twa/.gradle/
