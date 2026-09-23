@@ -16,7 +16,7 @@ async function main() {
     process.exit(1);
   }
 
-  const sql = postgres(url, { max: 1, ssl: postgresSsl(url) });
+  const sql = postgres(url, { max: 1, connect_timeout: 15, ssl: postgresSsl(url) });
   try {
     await migrate(drizzle(sql), { migrationsFolder: "./drizzle" });
     console.log("Migrations applied.");

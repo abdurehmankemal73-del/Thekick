@@ -45,6 +45,11 @@ export const metadata: Metadata = {
     template: `%s | ${CLUB.shortName}`,
   },
   description: `${CLUB.fullName} — ${CLUB.federation}. Discipline, strength, respect.`,
+  icons: {
+    icon: [{ url: "/icon", type: "image/png", sizes: "32x32" }],
+    shortcut: "/icon",
+    apple: "/icons/icon-192.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

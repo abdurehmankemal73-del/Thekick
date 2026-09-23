@@ -24,7 +24,7 @@ export function getDb(): Database {
   const conn = postgres(url, {
     max: serverless ? 1 : 10,
     idle_timeout: serverless ? 20 : 0,
-    connect_timeout: 30,
+    connect_timeout: 8,
     prepare: !pooled,
     ssl: postgresSsl(url),
   });

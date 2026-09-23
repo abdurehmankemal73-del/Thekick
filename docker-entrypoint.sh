@@ -1,7 +1,7 @@
 #!/bin/sh
-set -eu
+# Do not use `set -e`. A failed migrate/seed must never prevent `next start`.
+# Coolify/Traefik returns 503 for the whole site if this script exits first.
 
-# Auth.js infers the public host from HOSTNAME when proxy headers are missing.
 if [ "${HOSTNAME:-}" = "0.0.0.0" ]; then
   unset HOSTNAME
 fi
@@ -16,10 +16,27 @@ fi
 export AUTH_URL
 export AUTH_TRUST_HOST=true
 
-npm run db:migrate
-
-if [ "${RUN_DB_SEED:-true}" = "true" ]; then
-  npx tsx src/db/seed.ts || echo "Warning: database seed failed; starting the app anyway."
+if [ -z "${AUTH_SECRET:-}" ]; then
+  echo "Warning: AUTH_SECRET is not set; generating a temporary secret so the site can start."
+  AUTH_SECRET="$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")"
+  export AUTH_SECRET
 fi
+
+run_db_tasks() {
+  if npm run db:migrate; then
+    echo "Database migrations applied."
+  elif npx drizzle-kit migrate; then
+    echo "Database migrations applied with drizzle-kit."
+  else
+    echo "Warning: database migrate failed; the site is running anyway."
+  fi
+
+  if [ "${RUN_DB_SEED:-true}" = "true" ]; then
+    npx tsx src/db/seed.ts || echo "Warning: database seed failed; the site is running anyway."
+  fi
+}
+
+# Listen immediately so the proxy has a healthy backend. DB work happens after.
+run_db_tasks &
 
 exec npm start

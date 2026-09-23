@@ -14,12 +14,17 @@ export default async function HomePage() {
   let settings = null;
   let announcements: Awaited<ReturnType<typeof getPublishedAnnouncements>> = [];
   try {
-    [settings, announcements] = await Promise.all([
-      getClubSettings(),
-      getPublishedAnnouncements(3),
+    const data = await Promise.race([
+      Promise.all([getClubSettings(), getPublishedAnnouncements(3)]),
+      new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error("home-data-timeout")), 4000);
+      }),
     ]);
+    settings = data[0];
+    announcements = data[1];
   } catch {
     settings = null;
+    announcements = [];
   }
 
   return (

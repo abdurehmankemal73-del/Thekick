@@ -78,31 +78,30 @@ function coolifyDeploymentUrl() {
 
 const PRODUCTION_ORIGIN = "https://kick.smarterp.space";
 
+function tryPublicUrl(value: string | undefined, source: string): URL | undefined {
+  if (!value) return undefined;
+  try {
+    return usableUrl(value, source);
+  } catch (error) {
+    console.error("[metadata] Ignoring invalid public URL", source, error);
+    return undefined;
+  }
+}
+
 /** Public origin for metadata. Empty AUTH_URL is treated as unset, never `new URL("")`. */
 export function getMetadataBase(): URL | undefined {
   const authUrl = configuredAuthUrl();
-  if (authUrl) {
-    const parsed = usableUrl(authUrl, "AUTH_URL");
-    if (parsed) return parsed;
-  }
+  const parsedAuth = tryPublicUrl(authUrl, "AUTH_URL");
+  if (parsedAuth) return parsedAuth;
 
-  const vercelUrl = vercelDeploymentUrl();
-  if (vercelUrl) {
-    const parsed = usableUrl(vercelUrl, "VERCEL_URL");
-    if (parsed) return parsed;
-  }
+  const parsedVercel = tryPublicUrl(vercelDeploymentUrl(), "VERCEL_URL");
+  if (parsedVercel) return parsedVercel;
 
-  const netlifyUrl = netlifyDeploymentUrl();
-  if (netlifyUrl) {
-    const parsed = usableUrl(netlifyUrl, "URL");
-    if (parsed) return parsed;
-  }
+  const parsedNetlify = tryPublicUrl(netlifyDeploymentUrl(), "URL");
+  if (parsedNetlify) return parsedNetlify;
 
-  const coolifyUrl = coolifyDeploymentUrl();
-  if (coolifyUrl) {
-    const parsed = usableUrl(coolifyUrl, "COOLIFY_URL");
-    if (parsed) return parsed;
-  }
+  const parsedCoolify = tryPublicUrl(coolifyDeploymentUrl(), "COOLIFY_URL");
+  if (parsedCoolify) return parsedCoolify;
 
   return undefined;
 }
