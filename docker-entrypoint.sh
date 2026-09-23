@@ -23,6 +23,16 @@ if [ -z "${AUTH_SECRET:-}" ]; then
 fi
 
 run_db_tasks() {
+  # Let Next accept traffic before migrate/seed compete for memory.
+  i=0
+  while [ "$i" -lt 90 ]; do
+    if curl -fsS http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
+      break
+    fi
+    i=$((i + 1))
+    sleep 1
+  done
+
   if npm run db:migrate; then
     echo "Database migrations applied."
   elif npx drizzle-kit migrate; then
@@ -39,4 +49,4 @@ run_db_tasks() {
 # Listen immediately so the proxy has a healthy backend. DB work happens after.
 run_db_tasks &
 
-exec npm start
+exec node node_modules/next/dist/bin/next start --hostname 0.0.0.0 --port 3000

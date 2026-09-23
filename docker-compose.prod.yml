@@ -1,4 +1,6 @@
 # Same stack as docker-compose.yml for Coolify compose-file overrides.
+# Domain on the app service must be https://kick.smarterp.space:3000
+# so the proxy targets container port 3000.
 services:
   db:
     image: postgres:16-alpine
@@ -21,12 +23,14 @@ services:
       dockerfile: Dockerfile
     image: the-kick:latest
     restart: unless-stopped
+    init: true
     depends_on:
       db:
         condition: service_healthy
+    # Publish nothing on the host. A published port also attaches this
+    # container to Docker's default bridge, and Coolify's proxy then sometimes
+    # picks that address and answers "no available server".
     expose:
-      - "3000"
-    ports:
       - "3000"
     environment:
       SERVICE_URL_APP_3000: "https://kick.smarterp.space"
@@ -46,16 +50,10 @@ services:
       SMTP_PASS: "${SMTP_PASS:-}"
       SMTP_FROM: "${SMTP_FROM:-THE KICK <abdurehmankemal73@gmail.com>}"
     healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "fetch('http://127.0.0.1:3000/api/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
-        ]
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/api/health"]
       interval: 15s
       timeout: 5s
-      retries: 10
+      retries: 5
       start_period: 40s
 
 volumes:
