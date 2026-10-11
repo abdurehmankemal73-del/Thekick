@@ -5,7 +5,7 @@ import { authConfig } from "@/auth.config";
 const { auth } = NextAuth(authConfig);
 
 function isPayPath(pathname: string) {
-  return pathname === "/pay" || pathname.startsWith("/pay/");
+  return pathname === "/pay" || pathname.startsWith("/pay/") || pathname === "/student/pay";
 }
 
 function isJoinPath(pathname: string) {
@@ -43,6 +43,7 @@ export const proxy = auth((req) => {
       return NextResponse.redirect(new URL("/admin/dashboard", req.url));
     }
     if (status === "PENDING") {
+      if (pathname === "/student/pay") return NextResponse.next();
       return NextResponse.redirect(new URL("/pay", req.url));
     }
     if (status !== "ACTIVE") {

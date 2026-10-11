@@ -8,7 +8,15 @@ import { useI18n } from "@/i18n/provider";
 import { DEFAULT_PAYMENT_METHODS, PAYMENT_FEE_LABEL } from "@/lib/constants";
 import type { PaymentMethod } from "@/db/schema";
 
-export function PayView({ methods }: { methods: PaymentMethod[] | null | undefined }) {
+export function PayView({
+  methods,
+  pending = false,
+  proofSubmittedAt = null,
+}: {
+  methods: PaymentMethod[] | null | undefined;
+  pending?: boolean;
+  proofSubmittedAt?: string | null;
+}) {
   const { t } = useI18n();
   return (
     <div className="mx-auto max-w-5xl px-4 py-16">
@@ -17,6 +25,11 @@ export function PayView({ methods }: { methods: PaymentMethod[] | null | undefin
         {t("payTitle")}
       </PageTitle>
       <p className="mt-4 max-w-2xl text-muted">{t("payLead")}</p>
+      {pending ? (
+        <p className="mt-4 max-w-2xl rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+          {t("payProofWaiting")}
+        </p>
+      ) : null}
       <p className="mt-6 inline-flex items-baseline gap-2 rounded-lg border border-gold/40 bg-gold/10 px-4 py-3">
         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">{t("payAmountLabel")}</span>
         <span className="font-display text-3xl text-red">{PAYMENT_FEE_LABEL}</span>
@@ -24,7 +37,7 @@ export function PayView({ methods }: { methods: PaymentMethod[] | null | undefin
       <div className="mt-10">
         <PaymentMethodCards methods={methods ?? DEFAULT_PAYMENT_METHODS} />
       </div>
-      <PaymentProofForm />
+      <PaymentProofForm pending={pending} proofSubmittedAt={proofSubmittedAt} />
     </div>
   );
 }

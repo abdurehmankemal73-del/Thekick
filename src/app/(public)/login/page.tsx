@@ -96,8 +96,13 @@ function LoginForm() {
       }
       const session = await getSession();
       toast.success(t("signedIn"));
-      if (session?.user?.accountStatus === "PENDING") {
-        window.location.assign("/pay");
+      if (session?.user?.role === "ADMIN") {
+        router.push(callbackUrl && callbackUrl.startsWith("/admin") ? callbackUrl : "/admin/dashboard");
+        router.refresh();
+        return;
+      }
+      if (!session?.user || session.user.accountStatus !== "ACTIVE") {
+        window.location.replace("/pay");
         return;
       }
       router.push(callbackUrl ?? "/student/dashboard");

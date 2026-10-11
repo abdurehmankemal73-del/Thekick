@@ -2,7 +2,6 @@
 
 import { FormEvent, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { LogIn, Mail, Send, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -17,7 +16,6 @@ import { useI18n } from "@/i18n/provider";
 
 export default function RegisterPage() {
   const { t } = useI18n();
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const submittingRef = useRef(false);
@@ -46,22 +44,18 @@ export default function RegisterPage() {
     submittingRef.current = true;
     setLoading(true);
     try {
-      await api<{ message: string }>("/api/auth/register", {
+      await api<{ message: string; redirectTo?: string }>("/api/auth/register", {
         method: "POST",
         body: JSON.stringify(parsed.data),
       });
-      let signedIn = { ok: false };
       try {
-        signedIn = await signInWithCredentials(parsed.data.email, parsed.data.password);
+        await signInWithCredentials(parsed.data.email, parsed.data.password);
       } catch {
-        signedIn = { ok: false };
+        // Register already created a session when possible. Still open pay.
       }
       toast.success(t("registrationSubmitted"));
-      if (signedIn.ok) {
-        window.location.assign("/pay");
-        return;
-      }
-      router.replace("/pay");
+      window.location.replace("/pay");
+      return;
     } catch (error) {
       const message = error instanceof ApiError ? error.message : t("registerFailed");
       toast.error(message);

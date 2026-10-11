@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
+import { signIn } from "@/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { json, errorResponse, readJson, HttpError } from "@/lib/http";
@@ -38,11 +39,22 @@ export async function POST(request: Request) {
       })
       .returning();
 
+    try {
+      await signIn("credentials", {
+        email,
+        password: data.password,
+        redirect: false,
+      });
+    } catch (error) {
+      console.error("[auth] auto sign-in after register failed", error);
+    }
+
     return json(
       {
         message:
           "Account created. Pay the fee and send a screenshot. An admin will check it before your student pages open.",
         user: publicUser(created),
+        redirectTo: "/pay",
       },
       201,
     );

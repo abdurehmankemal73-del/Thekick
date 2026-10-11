@@ -37,9 +37,6 @@ export async function POST(request: NextRequest) {
 
       if (result && typeof result === "object" && "error" in result && result.error) {
         const code = `${"code" in result ? result.code : ""} ${result.error}`.toLowerCase();
-        if (code.includes("pending_approval")) {
-          throw new HttpError(403, "Your registration is pending administrator approval.");
-        }
         if (code.includes("account_rejected")) {
           throw new HttpError(403, "Your registration was not approved.");
         }
@@ -57,9 +54,6 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       if (error instanceof HttpError) throw error;
       const code = authCode(error);
-      if (code.includes("pending_approval")) {
-        throw new HttpError(403, "Your registration is pending administrator approval.");
-      }
       if (code.includes("account_rejected")) {
         throw new HttpError(403, "Your registration was not approved.");
       }

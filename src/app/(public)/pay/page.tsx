@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CLUB } from "@/lib/constants";
+import { getSessionUser } from "@/lib/guards";
 import { getClubSettings } from "@/lib/queries";
 import { PayView } from "./pay-view";
 
@@ -19,5 +20,14 @@ export default async function PayPage() {
     methods = null;
   }
 
-  return <PayView methods={methods} />;
+  const user = await getSessionUser().catch(() => null);
+  const pending = user?.role === "STUDENT" && user.accountStatus === "PENDING";
+
+  return (
+    <PayView
+      methods={methods}
+      pending={Boolean(pending)}
+      proofSubmittedAt={pending ? user?.paymentProofSubmittedAt?.toISOString() ?? null : null}
+    />
+  );
 }

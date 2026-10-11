@@ -35,8 +35,10 @@ export async function signInWithCredentials(email: string, password: string) {
   });
 
   const data = (await res.json().catch(() => null)) as { url?: string } | null;
-  const { error, code } = errorFromUrl(data?.url ?? res.headers.get("location"));
-  if (error || code) return { ok: false as const, error, code };
+  const location = data?.url ?? res.headers.get("location") ?? "";
+  const { error, code } = errorFromUrl(location);
+  const landedOnPay = /\/pay(?:\?|$|#)/.test(location);
+  if ((error || code) && !landedOnPay) return { ok: false as const, error, code };
   if (!res.ok && res.status !== 302 && res.status !== 307) {
     return { ok: false as const, error: "service_unavailable", code: undefined };
   }

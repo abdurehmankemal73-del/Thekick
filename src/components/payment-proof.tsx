@@ -11,13 +11,22 @@ import { Card } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 import { useI18n } from "@/i18n/provider";
 
-export function PaymentProofForm() {
+export function PaymentProofForm({
+  pending: pendingFromServer = false,
+  proofSubmittedAt = null,
+}: {
+  pending?: boolean;
+  proofSubmittedAt?: string | null;
+}) {
   const { data, status } = useSession();
   const { t } = useI18n();
   const [sending, setSending] = useState(false);
-  const [sentAt, setSentAt] = useState<string | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const pending = data?.user?.role === "STUDENT" && data.user.accountStatus === "PENDING";
+  const [sentAt, setSentAt] = useState<string | null>(proofSubmittedAt);
+  const [preview, setPreview] = useState<string | null>(
+    proofSubmittedAt ? `/api/payments/proof?t=${encodeURIComponent(proofSubmittedAt)}` : null,
+  );
+  const pending =
+    pendingFromServer || (data?.user?.role === "STUDENT" && data.user.accountStatus === "PENDING");
 
   useEffect(() => {
     if (!pending) return;
@@ -31,7 +40,7 @@ export function PaymentProofForm() {
       .catch(() => undefined);
   }, [pending]);
 
-  if (status === "loading") return null;
+  if (!pending && status === "loading") return null;
   if (!pending) {
     if (data?.user) return null;
     return (

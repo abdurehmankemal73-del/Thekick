@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Wallet } from "lucide-react";
 import { api } from "@/lib/api";
 import { PaymentMethodCards } from "@/components/payment-methods";
+import { PaymentProofForm } from "@/components/payment-proof";
 import { EmptyState, Skeleton } from "@/components/ui/empty-state";
 import { PageTitle } from "@/components/ui/icon";
 import { useI18n } from "@/i18n/provider";
@@ -36,7 +37,10 @@ export default function StudentPayPage() {
       ) : !methods ? (
         <Skeleton className="h-64" />
       ) : (
-        <PaymentMethodCards methods={methods} />
+        <>
+          <PaymentMethodCards methods={methods} />
+          <PaymentProofForm />
+        </>
       )}
     </div>
   );
