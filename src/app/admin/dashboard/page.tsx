@@ -24,7 +24,7 @@ type Dash = {
     totalAnnouncements: number;
   };
   beltDistribution: Array<{ belt: BeltLevel; count: number }>;
-  pendingStudents: Array<{ id: string; fullName: string; email: string; accountStatus: string; createdAt: string }>;
+  pendingStudents: Array<{ id: string; fullName: string; email: string; accountStatus: string; paymentProofSubmittedAt: string | null; createdAt: string }>;
   recentRegistrations: Array<{ id: string; fullName: string; accountStatus: string; createdAt: string }>;
   recentPermissions: Array<{ id: string; studentName: string; status: string }>;
   recentGrades: Array<{ id: string; studentName: string; assessmentName: string }>;
@@ -99,11 +99,23 @@ export default function AdminDashboardPage() {
                 <div>
                   <p className="font-semibold">{student.fullName}</p>
                   <p className="text-sm text-muted">{student.email}</p>
+                  {student.paymentProofSubmittedAt ? (
+                    <a href={`/api/admin/students/${student.id}/payment-proof`} target="_blank" rel="noreferrer" className="mt-2 inline-block">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`/api/admin/students/${student.id}/payment-proof`}
+                        alt={t("adminProof")}
+                        className="max-h-32 rounded-md border border-line object-contain"
+                      />
+                    </a>
+                  ) : (
+                    <p className="mt-1 text-sm text-amber-800">{t("adminNoProof")}</p>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    disabled={busyId === student.id}
+                    disabled={busyId === student.id || !student.paymentProofSubmittedAt}
                     onClick={async () => {
                       setBusyId(student.id);
                       try {

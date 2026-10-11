@@ -23,6 +23,7 @@ type Student = {
   telegramUsername: string | null;
   beltLevel: BeltLevel | null;
   accountStatus: AccountStatus;
+  paymentProofSubmittedAt: string | null;
 };
 
 export default function AdminStudentsPage() {
@@ -161,15 +162,27 @@ function AdminStudentsInner() {
               <div>
                 <p className="font-semibold">{student.fullName}</p>
                 <p className="text-sm text-muted">{student.email} · @{student.telegramUsername}</p>
-                <div className="mt-2 flex gap-2">
+                <div className="mt-2 flex flex-wrap gap-2">
                   <BeltBadge belt={student.beltLevel} />
                   <StatusBadge status={student.accountStatus} />
                 </div>
+                {student.paymentProofSubmittedAt ? (
+                  <a href={`/api/admin/students/${student.id}/payment-proof`} target="_blank" rel="noreferrer" className="mt-3 inline-block">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/api/admin/students/${student.id}/payment-proof`}
+                      alt={t("adminProof")}
+                      className="max-h-40 rounded-md border border-line object-contain"
+                    />
+                  </a>
+                ) : (
+                  <p className="mt-2 text-sm text-amber-800">{t("adminNoProof")}</p>
+                )}
               </div>
               <div className="flex flex-wrap gap-2">
                 {student.accountStatus === "PENDING" ? (
                   <>
-                    <Button size="sm" disabled={busyId === student.id} onClick={() => approve(student.id)}>
+                    <Button size="sm" disabled={busyId === student.id || !student.paymentProofSubmittedAt} onClick={() => approve(student.id)}>
                       <Icon icon={Check} />
                       {busyId === student.id ? "Sending…" : "Approve"}
                     </Button>

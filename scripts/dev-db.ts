@@ -11,7 +11,7 @@ const pg = new EmbeddedPostgres({
   databaseDir: path.join(process.cwd(), "data", "pg"),
   user: "thekick",
   password: "thekick",
-  port: 5432,
+  port: 5435,
   persistent: true,
   authMethod: "scram-sha-256",
 });
@@ -27,7 +27,7 @@ async function main() {
   } catch {
     // already exists
   }
-  console.log("PostgreSQL is running on postgresql://thekick:thekick@localhost:5432/thekick");
+  console.log("PostgreSQL is running on postgresql://thekick:thekick@localhost:5435/thekick");
   await new Promise(() => undefined);
 }
 

@@ -87,6 +87,7 @@ export async function GET() {
         email: users.email,
         beltLevel: users.beltLevel,
         accountStatus: users.accountStatus,
+        paymentProofSubmittedAt: users.paymentProofSubmittedAt,
         createdAt: users.createdAt,
       })
       .from(users)

@@ -97,6 +97,9 @@ export const MAX_PAGE_SIZE = 50;
 
 export const ACCOUNT_HOLDER_NAME = "Abdurehman kemal";
 
+export const PAYMENT_FEE_ETB = 200;
+export const PAYMENT_FEE_LABEL = `${PAYMENT_FEE_ETB} ETB`;
+
 export const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
   {
     id: "cbe",

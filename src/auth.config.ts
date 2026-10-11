@@ -49,7 +49,7 @@ export const authConfig = {
         return role === "ADMIN";
       }
       if (pathname.startsWith("/student")) {
-        return role === "STUDENT" && status === "ACTIVE";
+        return role === "STUDENT" && (status === "ACTIVE" || status === "PENDING");
       }
       return true;
     },

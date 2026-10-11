@@ -70,9 +70,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new AuthError("invalid_credentials");
         }
 
-        if (user.accountStatus === "PENDING") {
-          throw new AuthError("pending_approval");
-        }
         if (user.accountStatus === "SUSPENDED") {
           throw new AuthError("account_suspended");
         }

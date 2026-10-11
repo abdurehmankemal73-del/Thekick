@@ -23,7 +23,11 @@ export function PublicHeader() {
   const { t } = useI18n();
   const menuId = useId();
   const dashboard =
-    data?.user?.role === "ADMIN" ? "/admin/dashboard" : "/student/dashboard";
+    data?.user?.accountStatus === "PENDING"
+      ? "/pay"
+      : data?.user?.role === "ADMIN"
+        ? "/admin/dashboard"
+        : "/student/dashboard";
 
   const links = [
     { href: "/", label: t("navHome"), icon: Home },
@@ -137,8 +141,8 @@ export function PublicHeader() {
                 {data?.user ? (
                   <Button asChild className="h-12 min-h-12 w-full justify-center sm:w-auto">
                     <Link href={dashboard} onClick={() => setOpen(false)}>
-                      <Icon icon={LayoutDashboard} />
-                      {t("dashboard")}
+                      <Icon icon={data.user.accountStatus === "PENDING" ? Wallet : LayoutDashboard} />
+                      {data.user.accountStatus === "PENDING" ? t("navPay") : t("dashboard")}
                     </Link>
                   </Button>
                 ) : (

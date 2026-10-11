@@ -7,7 +7,7 @@ import { PaymentMethodCards } from "@/components/payment-methods";
 import { EmptyState, Skeleton } from "@/components/ui/empty-state";
 import { PageTitle } from "@/components/ui/icon";
 import { useI18n } from "@/i18n/provider";
-import { DEFAULT_PAYMENT_METHODS } from "@/lib/constants";
+import { DEFAULT_PAYMENT_METHODS, PAYMENT_FEE_LABEL } from "@/lib/constants";
 import type { ClubSettings } from "@/db/schema";
 
 export default function StudentPayPage() {
@@ -26,6 +26,10 @@ export default function StudentPayPage() {
       <div>
         <PageTitle icon={Wallet}>{t("payTitle")}</PageTitle>
         <p className="mt-1 text-muted">{t("payLead")}</p>
+        <p className="mt-3 inline-flex items-baseline gap-2 rounded-lg border border-gold/40 bg-gold/10 px-4 py-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">{t("payAmountLabel")}</span>
+          <span className="font-display text-2xl text-red">{PAYMENT_FEE_LABEL}</span>
+        </p>
       </div>
       {error ? (
         <EmptyState title={error} icon={Wallet} />

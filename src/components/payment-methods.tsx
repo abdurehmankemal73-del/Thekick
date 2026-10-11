@@ -63,34 +63,45 @@ function PaymentMethodCard({ method }: { method: PaymentMethod }) {
   }
 
   return (
-    <Card className="flex h-full flex-col">
-      <div className="flex h-20 items-center justify-center rounded-lg bg-surface px-4">
-        <LogoImage
-          src={method.logoUrl}
-          alt={method.label}
-          className="max-h-16 max-w-[160px] object-contain"
-        />
+    <button
+      type="button"
+      onClick={() => void copyNumber()}
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line/80 bg-white text-left shadow-[0_10px_30px_-18px_rgba(11,11,12,0.45)] transition hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-[0_18px_40px_-18px_rgba(200,16,46,0.35)] focus-visible:outline-none"
+    >
+      <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-bg to-bg-soft px-5 py-4">
+        <div className="flex h-12 w-[7.5rem] items-center justify-center rounded-xl bg-white px-2 shadow-sm">
+          <LogoImage
+            src={method.logoUrl}
+            alt={method.label}
+            className="max-h-9 max-w-[6.5rem] object-contain"
+          />
+        </div>
+        <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-soft">
+          {method.label}
+        </span>
       </div>
-      <p className="mt-4 font-display text-xl">{method.label}</p>
-      <dl className="mt-3 space-y-2 text-sm">
-        <div>
-          <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
-            {t("payAccountName")}
-          </dt>
-          <dd className="mt-0.5 font-medium">{method.accountName}</dd>
-        </div>
-        <div>
-          <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
-            {t("payAccountNumber")}
-          </dt>
-          <dd className="mt-0.5 break-all font-medium tracking-wide">{method.accountNumber}</dd>
-        </div>
-      </dl>
-      <Button type="button" variant="outline" className="mt-5 w-full" onClick={() => void copyNumber()}>
-        <Icon icon={copied ? Check : Copy} />
-        {copied ? t("payCopied") : t("payCopy")}
-      </Button>
-    </Card>
+      <div className="flex flex-1 flex-col px-5 py-4">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
+          {t("payAccountName")}
+        </p>
+        <p className="mt-1 text-sm font-medium text-ink">{method.accountName}</p>
+        <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
+          {t("payAccountNumber")}
+        </p>
+        <p className="mt-1 font-mono text-lg font-semibold tracking-[0.12em] text-ink break-all">
+          {method.accountNumber}
+        </p>
+        <span
+          className={cn(
+            "mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-full text-sm font-semibold transition",
+            copied ? "bg-emerald-50 text-emerald-800" : "bg-bg text-cream group-hover:bg-red",
+          )}
+        >
+          <Icon icon={copied ? Check : Copy} />
+          {copied ? t("payCopied") : t("payCopy")}
+        </span>
+      </div>
+    </button>
   );
 }
 

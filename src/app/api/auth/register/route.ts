@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     return json(
       {
         message:
-          "Registration received. An administrator will approve your account before you can sign in.",
+          "Account created. Pay the fee and send a screenshot. An admin will check it before your student pages open.",
         user: publicUser(created),
       },
       201,

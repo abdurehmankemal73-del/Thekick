@@ -37,7 +37,7 @@ const MAGIC: Array<{ mime: (typeof ALLOWED_IMAGE_TYPES)[number]; test: (bytes: B
   },
 ];
 
-export async function saveUploadedImage(file: File, folder: "news") {
+export async function saveUploadedImage(file: File, folder: "news" | "payments") {
   if (!file || file.size === 0) {
     throw new HttpError(400, "Choose an image file");
   }
@@ -61,6 +61,26 @@ export async function saveUploadedImage(file: File, folder: "news") {
   });
 
   return `/api/media/${folder}/${filename}`;
+}
+
+export async function deleteUploadedImage(folder: "news" | "payments", filename: string) {
+  await db
+    .delete(uploadedFiles)
+    .where(and(eq(uploadedFiles.folder, folder), eq(uploadedFiles.filename, filename)));
+}
+
+export async function readPaymentProof(filename: string) {
+  if (!/^[0-9a-f-]{36}\.(jpg|png|gif|webp)$/i.test(filename)) return null;
+  const [row] = await db
+    .select({
+      data: uploadedFiles.data,
+      contentType: uploadedFiles.contentType,
+    })
+    .from(uploadedFiles)
+    .where(and(eq(uploadedFiles.folder, "payments"), eq(uploadedFiles.filename, filename)))
+    .limit(1);
+  if (!row) return null;
+  return { buffer: Buffer.from(row.data), contentType: row.contentType };
 }
 
 export async function readUploadedImage(key: string) {

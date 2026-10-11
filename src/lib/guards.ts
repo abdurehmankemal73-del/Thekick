@@ -17,6 +17,17 @@ export async function getSessionUser() {
   return user ?? null;
 }
 
+export async function requirePendingStudent(): Promise<User> {
+  const user = await getSessionUser();
+  if (!user) {
+    throw new HttpError(401, "You must be signed in");
+  }
+  if (user.role !== "STUDENT" || user.accountStatus !== "PENDING") {
+    throw new HttpError(403, "Only students waiting for approval can send a payment screenshot");
+  }
+  return user;
+}
+
 export async function requireAuth(): Promise<User> {
   const user = await getSessionUser();
   if (!user) {

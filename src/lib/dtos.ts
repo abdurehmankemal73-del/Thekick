@@ -12,6 +12,7 @@ export function publicUser(user: User) {
     beltLevel: user.beltLevel,
     beltLabel: user.beltLevel ? BELT_LABELS[user.beltLevel] : null,
     accountStatus: user.accountStatus,
+    paymentProofSubmittedAt: user.paymentProofSubmittedAt,
     createdAt: user.createdAt,
   };
 }

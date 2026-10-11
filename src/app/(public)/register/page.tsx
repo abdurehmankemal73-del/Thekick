@@ -2,6 +2,7 @@
 
 import { FormEvent, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { LogIn, Mail, Send, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -10,15 +11,15 @@ import { FieldError, Input, InputWithIcon, Label, PasswordInput } from "@/compon
 import { Icon, PageTitle } from "@/components/ui/icon";
 import { BeltLevelList } from "@/components/belt-level";
 import { api, ApiError } from "@/lib/api";
+import { signInWithCredentials } from "@/lib/browser-auth";
 import { fieldErrors, registerSchema } from "@/lib/validations";
 import { useI18n } from "@/i18n/provider";
 
 export default function RegisterPage() {
   const { t } = useI18n();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [success, setSuccess] = useState<string | null>(null);
-  const [beltFormKey, setBeltFormKey] = useState(0);
   const submittingRef = useRef(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -26,7 +27,6 @@ export default function RegisterPage() {
     if (submittingRef.current || loading) return;
     const form = event.currentTarget;
     setErrors({});
-    setSuccess(null);
     const data = new FormData(form);
     const payload = {
       fullName: String(data.get("fullName") ?? ""),
@@ -46,14 +46,22 @@ export default function RegisterPage() {
     submittingRef.current = true;
     setLoading(true);
     try {
-      const res = await api<{ message: string }>("/api/auth/register", {
+      await api<{ message: string }>("/api/auth/register", {
         method: "POST",
         body: JSON.stringify(parsed.data),
       });
-      setSuccess(res.message);
+      let signedIn = { ok: false };
+      try {
+        signedIn = await signInWithCredentials(parsed.data.email, parsed.data.password);
+      } catch {
+        signedIn = { ok: false };
+      }
       toast.success(t("registrationSubmitted"));
-      form.reset();
-      setBeltFormKey((key) => key + 1);
+      if (signedIn.ok) {
+        window.location.assign("/pay");
+        return;
+      }
+      router.replace("/pay");
     } catch (error) {
       const message = error instanceof ApiError ? error.message : t("registerFailed");
       toast.error(message);
@@ -71,10 +79,7 @@ export default function RegisterPage() {
       <PageTitle icon={UserPlus} className="text-4xl">{t("joinKick")}</PageTitle>
       <p className="mt-3 text-muted">{t("registerLead")}</p>
       <Card className="mt-8">
-        {success ? (
-          <div className="rounded-md bg-emerald-50 p-4 text-sm text-emerald-900">{success}</div>
-        ) : null}
-        <form onSubmit={onSubmit} className="mt-4 space-y-4" noValidate>
+        <form onSubmit={onSubmit} className="space-y-4" noValidate>
           <div>
             <Label htmlFor="fullName">{t("fullName")}</Label>
             <Input id="fullName" name="fullName" required />
@@ -94,7 +99,6 @@ export default function RegisterPage() {
             <Label id="beltLevel-label">{t("beltLevel")}</Label>
             <p id="beltLevel-hint" className="mb-2 text-xs text-muted">{t("selectBelt")}</p>
             <BeltLevelList
-              key={beltFormKey}
               name="beltLevel"
               required
               labelledBy="beltLevel-label"

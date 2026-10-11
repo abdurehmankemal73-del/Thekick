@@ -91,6 +91,8 @@ export const users = pgTable(
     approvedAt: timestamp("approved_at", { mode: "date" }),
     approvalEmailSentAt: timestamp("approval_email_sent_at", { mode: "date" }),
     rejectedAt: timestamp("rejected_at", { mode: "date" }),
+    paymentProofFilename: varchar("payment_proof_filename", { length: 80 }),
+    paymentProofSubmittedAt: timestamp("payment_proof_submitted_at", { mode: "date" }),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" })
       .defaultNow()
