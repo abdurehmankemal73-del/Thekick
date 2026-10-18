@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Check, Copy, Plus, Trash2, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -17,11 +17,9 @@ import { cn } from "@/lib/utils";
 import type { PaymentMethod } from "@/db/schema";
 
 function LogoImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    setFailed(false);
-  }, [src]);
+  // The failure is keyed to the src, so a new URL automatically retries.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const failed = Boolean(src) && failedSrc === src;
 
   if (!src || failed) {
     return (
@@ -36,7 +34,7 @@ function LogoImage({ src, alt, className }: { src: string; alt: string; classNam
       src={src}
       alt={alt}
       className={className}
-      onError={() => setFailed(true)}
+      onError={() => setFailedSrc(src)}
     />
   );
 }
@@ -51,13 +49,22 @@ async function copyText(value: string, success: string) {
   }
 }
 
-function PaymentMethodCard({ method }: { method: PaymentMethod }) {
+function PaymentMethodCard({
+  method,
+  onCopied,
+  highlighted = false,
+}: {
+  method: PaymentMethod;
+  onCopied?: (method: PaymentMethod) => void;
+  highlighted?: boolean;
+}) {
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
   async function copyNumber() {
     const ok = await copyText(method.accountNumber, t("payCopied"));
     if (!ok) return;
+    onCopied?.(method);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1600);
   }
@@ -66,9 +73,15 @@ function PaymentMethodCard({ method }: { method: PaymentMethod }) {
     <button
       type="button"
       onClick={() => void copyNumber()}
-      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line/80 bg-white text-left shadow-[0_10px_30px_-18px_rgba(11,11,12,0.45)] transition hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-[0_18px_40px_-18px_rgba(200,16,46,0.35)] focus-visible:outline-none"
+      aria-pressed={highlighted}
+      title={t("payCopy")}
+      className={cn(
+        "group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-white text-left shadow-[0_10px_30px_-18px_rgba(11,11,12,0.45)] transition focus-visible:outline-none",
+        "hover:-translate-y-0.5 hover:border-gold/60 hover:shadow-[0_18px_40px_-18px_rgba(200,16,46,0.35)]",
+        highlighted ? "border-gold ring-1 ring-gold/50" : "border-line/80",
+      )}
     >
-      <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-bg to-bg-soft px-5 py-4">
+      <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-bg via-bg-soft to-bg/70 px-5 py-4">
         <div className="flex h-12 w-[7.5rem] items-center justify-center rounded-xl bg-white px-2 shadow-sm">
           <LogoImage
             src={method.logoUrl}
@@ -105,7 +118,15 @@ function PaymentMethodCard({ method }: { method: PaymentMethod }) {
   );
 }
 
-export function PaymentMethodCards({ methods }: { methods: PaymentMethod[] }) {
+export function PaymentMethodCards({
+  methods,
+  onCopied,
+  highlightId,
+}: {
+  methods: PaymentMethod[];
+  onCopied?: (method: PaymentMethod) => void;
+  highlightId?: string | null;
+}) {
   const { t } = useI18n();
   const visible = methods.filter((method) => method.enabled);
   if (visible.length === 0) {
@@ -114,7 +135,12 @@ export function PaymentMethodCards({ methods }: { methods: PaymentMethod[] }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {visible.map((method) => (
-        <PaymentMethodCard key={method.id} method={method} />
+        <PaymentMethodCard
+          key={method.id}
+          method={method}
+          onCopied={onCopied}
+          highlighted={highlightId === method.id}
+        />
       ))}
     </div>
   );

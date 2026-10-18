@@ -76,6 +76,28 @@ h3,
   outline-offset: 2px;
 }
 
+/* Staggered entrance for the mobile navigation menu. */
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.menu-in {
+  animation: menu-in 0.28s ease-out backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-in {
+    animation: none;
+  }
+}
+
 ::selection {
   background: var(--red);
   color: white;
