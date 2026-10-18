@@ -13,25 +13,31 @@ import {
 } from "@/lib/student-roster-pdf";
 import { isLocale, type Locale } from "@/i18n/messages";
 
-/** Admin-only roster export: every registered student, name and belt level, as a PDF. */
+/** Admin-only roster export: active students, name, belt level and status, as a PDF. */
 export async function GET(request: NextRequest) {
   try {
     await requireAdmin();
 
+    // The printed roster always lists active students only; the on-screen
+    // status filter is intentionally ignored (search and belt still apply).
     const where = studentWhere({
       q: searchParam(request, "q"),
       belt: searchParam(request, "belt"),
-      status: searchParam(request, "status"),
+      status: "ACTIVE",
     });
 
     const rows = await db
-      .select({ fullName: users.fullName, beltLevel: users.beltLevel })
+      .select({ fullName: users.fullName, beltLevel: users.beltLevel, accountStatus: users.accountStatus })
       .from(users)
       .where(where)
       .orderBy(asc(users.fullName));
 
     const students: RosterStudent[] = sortRosterStudents(
-      rows.map((row) => ({ fullName: row.fullName, beltLevel: row.beltLevel })),
+      rows.map((row) => ({
+        fullName: row.fullName,
+        beltLevel: row.beltLevel,
+        accountStatus: row.accountStatus,
+      })),
     );
 
     const lang = searchParam(request, "lang");

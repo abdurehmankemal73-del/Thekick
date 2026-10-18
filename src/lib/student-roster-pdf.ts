@@ -1,4 +1,6 @@
 import {
+  ACCOUNT_STATUS_LABELS,
+  ACCOUNT_STATUS_VISUALS,
   BELT_LABELS,
   BELT_LEVELS,
   BELT_VISUALS,
@@ -14,11 +16,12 @@ import {
   type PdfTextStyle,
 } from "@/lib/pdf";
 import { messages, type Locale, type MessageKey } from "@/i18n/messages";
-import type { BeltLevel } from "@/db/schema";
+import type { AccountStatus, BeltLevel } from "@/db/schema";
 
 export type RosterStudent = {
   fullName: string;
   beltLevel: BeltLevel | null;
+  accountStatus: AccountStatus;
 };
 
 export type RosterOptions = {
@@ -32,9 +35,10 @@ const PAGE_HEIGHT = 841.89;
 const MARGIN = 50;
 const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
 
-const COL_NUMBER = 34;
-const COL_NAME = 258;
-const COL_BELT = CONTENT_WIDTH - COL_NUMBER - COL_NAME;
+const COL_NUMBER = 28;
+const COL_NAME = 205;
+const COL_BELT = 184;
+const COL_STATUS = CONTENT_WIDTH - COL_NUMBER - COL_NAME - COL_BELT;
 
 const ROW_HEIGHT = 22;
 const TABLE_HEADER_HEIGHT = 24;
@@ -88,9 +92,41 @@ function drawBeltChip(doc: PdfDocument, x: number, y: number, belt: BeltLevel | 
   }
 }
 
+/** Draws an account-status pill (Active, Waiting, Stopped, …) sized to its label. */
+function drawStatusPill(
+  doc: PdfDocument,
+  x: number,
+  rowTop: number,
+  status: AccountStatus,
+  label: string,
+  style: PdfTextStyle,
+) {
+  const pillY = rowTop + (ROW_HEIGHT - CHIP.height) / 2;
+  const width = Math.min(
+    COL_STATUS - 8,
+    Math.max(46, measureText(doc, label, style) + 14),
+  );
+  const visual = ACCOUNT_STATUS_VISUALS[status];
+
+  doc
+    .roundedRect(x, pillY, width, CHIP.height, CHIP.height / 2)
+    .fillAndStroke(visual.fill, visual.stroke);
+
+  const textStyle = { ...style, color: visual.text };
+  drawText(
+    doc,
+    fitText(doc, label, width - 10, textStyle),
+    x + 7,
+    centeredTextY(pillY, CHIP.height, style.size ?? BODY_FONT_SIZE),
+    textStyle,
+  );
+}
+
 /**
- * Builds the admin roster PDF: every registered student with their belt level,
- * ordered by the caller, laid out as a table with a repeated header.
+ * Builds the admin roster PDF: active students with their belt level and
+ * account status, ordered by the caller, laid out as a table with a repeated
+ * header. The caller is responsible for restricting the roster to active
+ * students (the export route always filters to ACTIVE).
  */
 export async function buildStudentRosterPdf(
   students: RosterStudent[],
@@ -104,6 +140,11 @@ export async function buildStudentRosterPdf(
     if (!belt) return t("noBelt");
     const key = `belt_${belt}` as MessageKey;
     return messages[locale][key] ?? messages.en[key] ?? BELT_LABELS[belt];
+  };
+
+  const statusLabel = (status: AccountStatus) => {
+    const key = `status_${status}` as MessageKey;
+    return messages[locale][key] ?? messages.en[key] ?? ACCOUNT_STATUS_LABELS[status];
   };
 
   const doc = createPdfDocument({
@@ -130,9 +171,11 @@ export async function buildStudentRosterPdf(
   y += 27;
   drawText(doc, t("rosterSubtitle"), MARGIN, y, { size: 10, color: COLORS.muted });
   y += 16;
-  const meta = `${t("rosterCount").replace("{n}", String(students.length))}  ·  ${t(
-    "rosterGenerated",
-  ).replace("{date}", dateText)}`;
+  const meta = [
+    t("rosterCount").replace("{n}", String(students.length)),
+    t("rosterActiveOnly"),
+    t("rosterGenerated").replace("{date}", dateText),
+  ].join("  ·  ");
   drawText(doc, meta, MARGIN, y, { size: 9, color: COLORS.muted });
   y += 24;
 
@@ -145,6 +188,7 @@ export async function buildStudentRosterPdf(
     drawText(doc, "#", MARGIN + 8, textY, headerStyle);
     drawText(doc, t("colStudentName"), MARGIN + COL_NUMBER + 8, textY, headerStyle);
     drawText(doc, t("colBeltLevel"), MARGIN + COL_NUMBER + COL_NAME + 8, textY, headerStyle);
+    drawText(doc, t("colStatus"), MARGIN + COL_NUMBER + COL_NAME + COL_BELT + 8, textY, headerStyle);
     y += TABLE_HEADER_HEIGHT;
   };
 
@@ -189,6 +233,15 @@ export async function buildStudentRosterPdf(
         fitText(doc, beltLabel(student.beltLevel), COL_BELT - CHIP.width - 20, labelStyle),
         beltX + CHIP.width + 6,
         textY,
+        labelStyle,
+      );
+
+      drawStatusPill(
+        doc,
+        MARGIN + COL_NUMBER + COL_NAME + COL_BELT + 8,
+        y,
+        student.accountStatus,
+        statusLabel(student.accountStatus),
         labelStyle,
       );
 

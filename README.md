@@ -5,7 +5,7 @@ International Taekwon-Do Federation (ITF)
 
 Production-ready club platform: public website, student accounts, admin operations, grades, absence permissions, and announcements.
 
-Admins can export the whole roster — student names with their belt levels — as a PDF table from **Admin → Students → Download PDF** (`GET /api/admin/students/export`, rendered server-side with pdfkit; it follows the search/belt/status filters that are on screen and is written in the admin's language).
+Admins can export the roster — active students' names with their belt levels and account status — as a PDF table from **Admin → Students → Download PDF** (`GET /api/admin/students/export`, rendered server-side with pdfkit; it lists active students only, follows the search/belt filters that are on screen and is written in the admin's language).
 
 ## Architecture
 

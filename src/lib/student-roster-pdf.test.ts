@@ -1,6 +1,6 @@
 import { writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { BELT_LEVELS } from "@/lib/constants";
+import { ACCOUNT_STATUSES, BELT_LEVELS } from "@/lib/constants";
 import { splitText } from "@/lib/pdf";
 import {
   buildStudentRosterPdf,
@@ -13,6 +13,7 @@ function roster(count: number): RosterStudent[] {
   return Array.from({ length: count }, (_, index) => ({
     fullName: `Student Number ${index + 1}`,
     beltLevel: BELT_LEVELS[index % BELT_LEVELS.length] as BeltLevel,
+    accountStatus: ACCOUNT_STATUSES[index % ACCOUNT_STATUSES.length],
   }));
 }
 
@@ -43,10 +44,10 @@ describe("splitText", () => {
 describe("sortRosterStudents", () => {
   it("orders by belt rank and puts students without a belt last", () => {
     const sorted = sortRosterStudents([
-      { fullName: "Zoe", beltLevel: null },
-      { fullName: "Bekele", beltLevel: "RED" },
-      { fullName: "Aster", beltLevel: "WHITE" },
-      { fullName: "Abel", beltLevel: "WHITE" },
+      { fullName: "Zoe", beltLevel: null, accountStatus: "ACTIVE" },
+      { fullName: "Bekele", beltLevel: "RED", accountStatus: "ACTIVE" },
+      { fullName: "Aster", beltLevel: "WHITE", accountStatus: "ACTIVE" },
+      { fullName: "Abel", beltLevel: "WHITE", accountStatus: "ACTIVE" },
     ]);
 
     expect(sorted.map((student) => student.fullName)).toEqual(["Abel", "Aster", "Bekele", "Zoe"]);
@@ -72,9 +73,9 @@ describe("buildStudentRosterPdf", () => {
   it("renders Amharic names with an embedded Unicode font", async () => {
     const pdf = await buildStudentRosterPdf(
       [
-        { fullName: "አበበ ከበደ", beltLevel: "RED" },
-        { fullName: "Saada Mowlid", beltLevel: "WHITE_YELLOW_TAG" },
-        { fullName: "ጌታችን ብርሃን", beltLevel: null },
+        { fullName: "አበበ ከበደ", beltLevel: "RED", accountStatus: "ACTIVE" },
+        { fullName: "Saada Mowlid", beltLevel: "WHITE_YELLOW_TAG", accountStatus: "PENDING" },
+        { fullName: "ጌታችን ብርሃን", beltLevel: null, accountStatus: "SUSPENDED" },
       ],
       { locale: "am", generatedAt: new Date("2026-10-18T09:30:00Z") },
     );

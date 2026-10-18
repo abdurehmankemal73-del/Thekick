@@ -86,6 +86,16 @@ export const ACCOUNT_STATUS_LABELS: Record<(typeof ACCOUNT_STATUSES)[number], st
   REJECTED: "Rejected",
 };
 
+export type StatusVisual = { fill: string; stroke: string; text: string };
+
+/** Colours used to draw an account-status pill in the PDF exports. */
+export const ACCOUNT_STATUS_VISUALS: Record<(typeof ACCOUNT_STATUSES)[number], StatusVisual> = {
+  PENDING: { fill: "#fef3c7", stroke: "#fcd34d", text: "#713f12" },
+  ACTIVE: { fill: "#d1fae5", stroke: "#6ee7b7", text: "#14532d" },
+  SUSPENDED: { fill: "#fee2e2", stroke: "#fca5a5", text: "#7f1d1d" },
+  REJECTED: { fill: "#fee2e2", stroke: "#fca5a5", text: "#7f1d1d" },
+};
+
 export const PERMISSION_STATUSES = ["PENDING", "APPROVED", "REJECTED"] as const;
 
 export const ANNOUNCEMENT_STATUSES = ["DRAFT", "PUBLISHED"] as const;

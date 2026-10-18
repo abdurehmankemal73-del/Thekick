@@ -139,10 +139,12 @@ function AdminStudentsInner() {
   }
 
   // Downloads the roster PDF for the filters that are on screen right now.
+  // The PDF always lists active students only, so the status filter is dropped.
   async function downloadPdf() {
     setExporting(true);
     try {
       const params = new URLSearchParams(query);
+      params.delete("status");
       params.set("lang", locale);
       const res = await fetch(`/api/admin/students/export?${params.toString()}`, {
         credentials: "same-origin",
