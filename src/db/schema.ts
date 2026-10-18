@@ -370,6 +370,7 @@ export const clubSettings = pgTable("club_settings", {
     .$type<PaymentMethod[]>()
     .notNull()
     .default([]),
+  paymentsEnabled: boolean("payments_enabled").notNull().default(true),
   updatedAt: timestamp("updated_at", { mode: "date" })
     .defaultNow()
     .notNull()

@@ -42,6 +42,7 @@ export async function PATCH(request: Request) {
       achievements: data.achievements,
       instructors: data.instructors ?? existing.instructors ?? [],
       paymentMethods: data.paymentMethods ?? existing.paymentMethods,
+      paymentsEnabled: data.paymentsEnabled ?? existing.paymentsEnabled ?? true,
     };
 
     await db

@@ -42,6 +42,7 @@ export default function AdminSettingsPage() {
           ...payload,
           instructors: settings.instructors,
           paymentMethods: settings.paymentMethods,
+          paymentsEnabled: settings.paymentsEnabled,
         }),
       });
       setSettings(res.settings);
@@ -99,6 +100,20 @@ export default function AdminSettingsPage() {
           <div className="border-t border-line pt-4">
             <SectionTitle icon={Wallet}>{t("payMethods")}</SectionTitle>
             <p className="mb-4 mt-1 text-sm text-muted">{t("payLead")}</p>
+            <div className="mb-4">
+              <Label htmlFor="paymentsEnabled">{t("payToggleLabel")}</Label>
+              <select
+                id="paymentsEnabled"
+                className="mt-1 block w-full rounded-md border border-line bg-white p-2"
+                value={settings.paymentsEnabled ? "true" : "false"}
+                onChange={(e) =>
+                  setSettings({ ...settings, paymentsEnabled: e.target.value === "true" })
+                }
+              >
+                <option value="true">{t("payToggleEnabled")}</option>
+                <option value="false">{t("payToggleDisabled")}</option>
+              </select>
+            </div>
             <PaymentMethodsEditor
               methods={settings.paymentMethods}
               onChange={(paymentMethods) => setSettings({ ...settings, paymentMethods })}

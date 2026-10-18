@@ -173,4 +173,5 @@ export const DEFAULT_CLUB_SETTINGS = {
     },
   ],
   paymentMethods: DEFAULT_PAYMENT_METHODS,
+  paymentsEnabled: true,
 };

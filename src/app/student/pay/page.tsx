@@ -14,11 +14,15 @@ import type { ClubSettings } from "@/db/schema";
 export default function StudentPayPage() {
   const { t } = useI18n();
   const [methods, setMethods] = useState<ClubSettings["paymentMethods"] | null>(null);
+  const [paymentsEnabled, setPaymentsEnabled] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     api<{ settings: ClubSettings }>("/api/settings")
-      .then((res) => setMethods(res.settings.paymentMethods ?? DEFAULT_PAYMENT_METHODS))
+      .then((res) => {
+        setMethods(res.settings.paymentMethods ?? DEFAULT_PAYMENT_METHODS);
+        setPaymentsEnabled(res.settings.paymentsEnabled ?? true);
+      })
       .catch((err) => setError(err.message));
   }, []);
 
@@ -36,11 +40,15 @@ export default function StudentPayPage() {
         <EmptyState title={error} icon={Wallet} />
       ) : !methods ? (
         <Skeleton className="h-64" />
-      ) : (
+      ) : paymentsEnabled ? (
         <>
           <PaymentMethodCards methods={methods} />
           <PaymentProofForm />
         </>
+      ) : (
+        <div className="rounded-lg border border-line bg-white p-6 text-muted">
+          {t("paymentsDisabledMessage")}
+        </div>
       )}
     </div>
   );

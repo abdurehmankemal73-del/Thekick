@@ -5,6 +5,7 @@ import { users } from "@/db/schema";
 import { requirePendingStudent } from "@/lib/guards";
 import { errorResponse, HttpError, json } from "@/lib/http";
 import { deleteUploadedImage, readPaymentProof, saveUploadedImage } from "@/lib/uploads";
+import { getClubSettings } from "@/lib/queries";
 
 function imageResponse(file: { buffer: Buffer; contentType: string }) {
   return new NextResponse(new Uint8Array(file.buffer), {
@@ -33,6 +34,10 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const settings = await getClubSettings();
+    if (settings.paymentsEnabled === false) {
+      throw new HttpError(403, "Payments are currently disabled by admin");
+    }
     const user = await requirePendingStudent();
     const form = await request.formData();
     const file = form.get("screenshot");

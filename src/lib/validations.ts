@@ -186,6 +186,7 @@ export const clubSettingsSchema = z.object({
     )
     .optional(),
   paymentMethods: z.array(paymentMethodSchema).max(12).optional(),
+  paymentsEnabled: z.boolean().optional(),
 });
 
 export function fieldErrors(error: z.ZodError) {
