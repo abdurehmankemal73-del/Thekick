@@ -2,7 +2,7 @@
 
 import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Ban, Check, Pencil, Save, Trash2, Users, X } from "lucide-react";
+import { Ban, Check, Download, Pencil, Save, Trash2, Users, X } from "lucide-react";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
 import { Card } from "@/components/ui/card";
@@ -26,6 +26,10 @@ type Student = {
   paymentProofSubmittedAt: string | null;
 };
 
+function downloadName(header: string | null, fallback: string) {
+  return header?.match(/filename="([^"]+)"/)?.[1] ?? fallback;
+}
+
 export default function AdminStudentsPage() {
   return (
     <Suspense>
@@ -35,7 +39,7 @@ export default function AdminStudentsPage() {
 }
 
 function AdminStudentsInner() {
-  const { t, tBelt } = useI18n();
+  const { t, tBelt, locale } = useI18n();
   const params = useSearchParams();
   const [q, setQ] = useState("");
   const [belt, setBelt] = useState("");
@@ -45,6 +49,7 @@ function AdminStudentsInner() {
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [rejectId, setRejectId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   const query = useMemo(() => {
     const params = new URLSearchParams();
@@ -133,9 +138,52 @@ function AdminStudentsInner() {
     }
   }
 
+  // Downloads the roster PDF for the filters that are on screen right now.
+  async function downloadPdf() {
+    setExporting(true);
+    try {
+      const params = new URLSearchParams(query);
+      params.set("lang", locale);
+      const res = await fetch(`/api/admin/students/export?${params.toString()}`, {
+        credentials: "same-origin",
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new ApiError(res.status, data.error || "PDF export failed");
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = downloadName(
+        res.headers.get("Content-Disposition"),
+        `the-kick-students-${new Date().toISOString().slice(0, 10)}.pdf`,
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1_000);
+    } catch (error) {
+      toast.error(error instanceof ApiError ? error.message : "PDF export failed");
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <div className="space-y-4">
-      <PageTitle icon={Users}>{t("students")}</PageTitle>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <PageTitle icon={Users}>{t("students")}</PageTitle>
+        <Button
+          variant="outline"
+          onClick={downloadPdf}
+          disabled={exporting || !students || students.length === 0}
+        >
+          <Icon icon={Download} />
+          {exporting ? t("pdfPreparing") : t("downloadPdf")}
+        </Button>
+      </div>
       <div className="grid gap-3 md:grid-cols-3">
         <SearchField placeholder="Search name, email, Telegram" value={q} onChange={(e) => setQ(e.target.value)} />
         <Select value={belt} onChange={(e) => setBelt(e.target.value)}>

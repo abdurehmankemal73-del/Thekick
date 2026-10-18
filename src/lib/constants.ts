@@ -46,6 +46,28 @@ export const BELT_LABELS: Record<BeltLevel, string> = {
   DAN_1: "1st Dan",
 };
 
+export type BeltVisual = {
+  fill: string;
+  stroke: string;
+  stripe?: string;
+};
+
+/** Colours used to draw a belt chip on screen and in the PDF exports. */
+export const BELT_VISUALS: Record<BeltLevel, BeltVisual> = {
+  WHITE: { fill: "#f4f4f5", stroke: "#71717a" },
+  WHITE_YELLOW_TAG: { fill: "#f4f4f5", stroke: "#71717a", stripe: "#eab308" },
+  YELLOW: { fill: "#eab308", stroke: "#a16207" },
+  YELLOW_GREEN_TAG: { fill: "#eab308", stroke: "#a16207", stripe: "#15803d" },
+  GREEN: { fill: "#15803d", stroke: "#14532d" },
+  GREEN_BLUE_TAG: { fill: "#15803d", stroke: "#14532d", stripe: "#1d4ed8" },
+  BLUE: { fill: "#1d4ed8", stroke: "#1e3a8a" },
+  BLUE_RED_TAG: { fill: "#1d4ed8", stroke: "#1e3a8a", stripe: "#c8102e" },
+  RED: { fill: "#c8102e", stroke: "#9b0c23" },
+  RED_BLACK_TAG: { fill: "#c8102e", stroke: "#9b0c23", stripe: "#171717" },
+  BLACK: { fill: "#171717", stroke: "#0a0a0a" },
+  DAN_1: { fill: "#171717", stroke: "#0a0a0a" },
+};
+
 export const ABSENCE_TYPES = ["FAMILY", "CLASS_EXAM", "SICK", "JOURNEY"] as const;
 
 export const ABSENCE_LABELS: Record<(typeof ABSENCE_TYPES)[number], string> = {

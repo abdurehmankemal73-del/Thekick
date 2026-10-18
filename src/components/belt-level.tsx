@@ -2,31 +2,10 @@
 
 import { useState } from "react";
 import type { BeltLevel } from "@/db/schema";
-import { BELT_LEVELS } from "@/lib/constants";
+import { BELT_LEVELS, BELT_VISUALS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Select } from "@/components/ui/fields";
 import { useI18n } from "@/i18n/provider";
-
-type BeltVisual = {
-  fill: string;
-  stroke: string;
-  stripe?: string;
-};
-
-const BELT_VISUAL: Record<BeltLevel, BeltVisual> = {
-  WHITE: { fill: "#f4f4f5", stroke: "#71717a" },
-  WHITE_YELLOW_TAG: { fill: "#f4f4f5", stroke: "#71717a", stripe: "#eab308" },
-  YELLOW: { fill: "#eab308", stroke: "#a16207" },
-  YELLOW_GREEN_TAG: { fill: "#eab308", stroke: "#a16207", stripe: "#15803d" },
-  GREEN: { fill: "#15803d", stroke: "#14532d" },
-  GREEN_BLUE_TAG: { fill: "#15803d", stroke: "#14532d", stripe: "#1d4ed8" },
-  BLUE: { fill: "#1d4ed8", stroke: "#1e3a8a" },
-  BLUE_RED_TAG: { fill: "#1d4ed8", stroke: "#1e3a8a", stripe: "#c8102e" },
-  RED: { fill: "#c8102e", stroke: "#9b0c23" },
-  RED_BLACK_TAG: { fill: "#c8102e", stroke: "#9b0c23", stripe: "#171717" },
-  BLACK: { fill: "#171717", stroke: "#0a0a0a" },
-  DAN_1: { fill: "#171717", stroke: "#0a0a0a" },
-};
 
 const SIZES = {
   sm: { className: "h-3 w-10", width: 40, height: 12 },
@@ -43,7 +22,7 @@ export function BeltMark({
   size?: keyof typeof SIZES;
   className?: string;
 }) {
-  const visual = BELT_VISUAL[belt];
+  const visual = BELT_VISUALS[belt];
   const preset = SIZES[size];
 
   return (

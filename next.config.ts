@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import path from "node:path";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["postgres", "nodemailer"],
+  serverExternalPackages: ["postgres", "nodemailer", "pdfkit"],
   turbopack: {
     root: path.resolve(__dirname),
   },
