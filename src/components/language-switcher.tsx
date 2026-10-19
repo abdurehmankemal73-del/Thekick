@@ -14,11 +14,11 @@ export function LanguageSwitcher({ light = false }: { light?: boolean }) {
       role="group"
       aria-label={t("language")}
       className={cn(
-        "inline-flex max-w-[min(100%,11.5rem)] shrink-0 items-center gap-0.5 overflow-x-auto rounded-md border p-0.5 text-[10px] font-semibold sm:max-w-none sm:gap-1 sm:text-xs",
+        "inline-flex h-11 max-w-[min(100%,12.5rem)] shrink-0 items-stretch gap-0.5 overflow-x-auto rounded-md border p-1 text-[11px] font-semibold sm:max-w-none sm:gap-1 sm:text-xs",
         light ? "border-white/20" : "border-line",
       )}
     >
-      <Icon icon={Globe} className={cn("ml-0.5 hidden sm:inline sm:ml-1", light ? "text-gold" : "text-muted")} />
+      <Icon icon={Globe} className={cn("hidden sm:inline sm:my-auto sm:ml-1", light ? "text-gold" : "text-muted")} />
       {LOCALES.map((code) => (
         <button
           key={code}
@@ -27,7 +27,7 @@ export function LanguageSwitcher({ light = false }: { light?: boolean }) {
           aria-pressed={locale === code}
           title={LOCALE_META[code].name}
           className={cn(
-            "rounded px-1 py-1 leading-none transition sm:px-1.5",
+            "flex min-h-9 min-w-9 items-center justify-center rounded px-2 py-1 leading-none transition sm:min-w-0 sm:px-1.5",
             locale === code
               ? light
                 ? "bg-gold text-bg"

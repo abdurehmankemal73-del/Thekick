@@ -31,6 +31,11 @@ html[data-theme="mint"] {
   --white: #f4fffb;
 }
 
+/* Small-phone step: lets the header wordmark reappear from 360px up, before sm. */
+@theme {
+  --breakpoint-xs: 22.5rem;
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-bg-elevated: var(--bg-elevated);

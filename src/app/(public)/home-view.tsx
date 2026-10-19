@@ -161,7 +161,7 @@ export function HomeView({
         <div className="mx-auto max-w-6xl px-4">
           <div className="flex items-end justify-between gap-4">
             <SectionTitle icon={Megaphone} className="text-3xl">{t("news")}</SectionTitle>
-            <Link href="/news" className="text-sm font-semibold text-red">
+            <Link href="/news" className="inline-block py-1 text-sm font-semibold text-red">
               {t("news")}
             </Link>
           </div>

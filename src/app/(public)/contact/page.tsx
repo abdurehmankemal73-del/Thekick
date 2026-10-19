@@ -91,7 +91,7 @@ export default function ContactPage() {
               <span>
                 <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">{item.label}</span>
                 {"href" in item && item.href ? (
-                  <a href={item.href} className="mt-0.5 block whitespace-pre-line hover:text-red">
+                  <a href={item.href} className="mt-0.5 block whitespace-pre-line py-1 hover:text-red">
                     {item.value}
                   </a>
                 ) : (

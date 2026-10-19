@@ -152,7 +152,7 @@ export function PublicHeader() {
           aria-label={CLUB.fullName}
           className="inline-flex min-w-0 flex-1 items-center overflow-hidden lg:flex-none"
         >
-          <Logo size="header" light />
+          <Logo size="header" light responsive />
         </Link>
 
         {/* Desktop navigation: inline links with an animated active marker. */}
@@ -184,7 +184,7 @@ export function PublicHeader() {
         </nav>
 
         <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
-          <ColorSwitcher light className="h-11 w-11" />
+          <ColorSwitcher light className="hidden h-11 w-11 sm:inline-flex" />
           <LanguageSwitcher light />
           {canInstall ? (
             <button
@@ -234,7 +234,7 @@ export function PublicHeader() {
             aria-label="Main"
             aria-hidden={!open}
             inert={!open ? true : undefined}
-            className="relative z-40 border-t border-white/10 bg-bg px-4 py-4 shadow-lg"
+            className="relative z-40 max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-white/10 bg-bg px-4 py-4 shadow-lg sm:max-h-[calc(100dvh-4.25rem)]"
           >
             <div className="mx-auto max-w-6xl space-y-1">
               {links.map((link, index) => (
@@ -272,9 +272,17 @@ export function PublicHeader() {
                   {t("installApp")}
                 </button>
               ) : null}
+              {/* The theme toggle leaves the crowded bar on phones and lives here instead. */}
+              <div
+                className="menu-in flex min-h-11 items-center justify-between gap-3 rounded-lg px-3 py-2 sm:hidden"
+                style={{ animationDelay: `${(links.length + (canInstall ? 1 : 0)) * 40}ms` }}
+              >
+                <span className="text-sm font-medium text-cream/80">{t("color")}</span>
+                <ColorSwitcher light className="h-11 w-11" />
+              </div>
               <div
                 className="menu-in flex flex-col gap-2 pt-3 sm:flex-row"
-                style={{ animationDelay: `${(links.length + 1) * 40}ms` }}
+                style={{ animationDelay: `${(links.length + (canInstall ? 1 : 0) + 1) * 40}ms` }}
               >
                 {authCta}
               </div>

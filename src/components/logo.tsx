@@ -17,10 +17,17 @@ export function Logo({
   className,
   size = "header",
   light = false,
+  responsive = false,
 }: {
   className?: string;
   size?: keyof typeof SIZES;
   light?: boolean;
+  /**
+   * Collapse to the bare mark on very narrow screens. Used where the logo
+   * shares a single row with the navigation controls (the public header):
+   * the wordmark returns from 360px and the tagline from sm.
+   */
+  responsive?: boolean;
 }) {
   const preset = SIZES[size];
 
@@ -37,13 +44,14 @@ export function Logo({
       />
       <span
         className={cn(
-          "flex min-w-0 flex-col justify-center overflow-hidden leading-tight",
+          "min-w-0 flex-col justify-center overflow-hidden leading-tight",
+          responsive ? "hidden xs:flex" : "flex",
           light ? "text-cream" : "text-ink",
         )}
       >
         <span
           className={cn(
-            "font-display text-[11px] tracking-[0.08em] sm:text-xs md:text-[13px]",
+            "truncate font-display text-[11px] tracking-[0.08em] sm:text-xs md:text-[13px]",
             size === "footer" && "sm:text-[13px]",
           )}
         >
@@ -51,7 +59,8 @@ export function Logo({
         </span>
         <span
           className={cn(
-            "mt-0.5 text-[8px] font-medium uppercase tracking-[0.14em] sm:text-[9px] md:text-[10px]",
+            "mt-0.5 font-medium uppercase tracking-[0.14em] text-[10px] sm:text-[11px]",
+            responsive && "hidden sm:block",
             light ? "text-cream/70" : "text-ink/65",
           )}
         >

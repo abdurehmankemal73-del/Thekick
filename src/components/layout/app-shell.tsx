@@ -47,7 +47,7 @@ export function AppShell({
             href={item.href}
             onClick={() => setOpen(false)}
             className={cn(
-              "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium text-cream/75 hover:bg-white/10 hover:text-cream",
+              "flex min-h-11 items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium text-cream/75 hover:bg-white/10 hover:text-cream md:min-h-9",
               active && "bg-red text-white hover:bg-red",
             )}
           >
@@ -61,7 +61,7 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-surface">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-bg p-4 text-cream md:flex">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col overflow-y-auto bg-bg p-4 text-cream md:flex">
         <Link href="/" className="mb-8 inline-flex min-w-0 items-center" aria-label={CLUB.fullName}>
           <Logo size="header" light />
         </Link>
@@ -78,23 +78,30 @@ export function AppShell({
 
       <div className="md:pl-64">
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-2 border-b border-line bg-white px-4 md:hidden">
-          <Link href="/" aria-label={CLUB.fullName} className="inline-flex min-w-0 max-w-[70%] items-center">
+          <Link href="/" aria-label={CLUB.fullName} className="inline-flex min-w-0 flex-1 items-center">
             <Logo size="header" />
           </Link>
-          <div className="flex items-center gap-2">
-            <SiteControls />
-            <button aria-label={t("openMenu")} onClick={() => setOpen(true)}>
-              <Icon icon={Menu} size="md" />
-            </button>
-          </div>
+          <button
+            type="button"
+            aria-label={t("openMenu")}
+            onClick={() => setOpen(true)}
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-ink transition hover:bg-surface"
+          >
+            <Icon icon={Menu} size="md" />
+          </button>
         </header>
         {open ? (
-          <div className="fixed inset-0 z-50 bg-bg p-4 md:hidden">
-            <div className="mb-6 flex items-center justify-between">
+          <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-bg p-4 md:hidden">
+            <div className="mb-6 flex items-center justify-between gap-2">
               <Link href="/" aria-label={CLUB.fullName} className="inline-flex min-w-0 items-center">
                 <Logo size="header" light />
               </Link>
-              <button aria-label={t("closeMenu")} onClick={() => setOpen(false)} className="text-cream">
+              <button
+                type="button"
+                aria-label={t("closeMenu")}
+                onClick={() => setOpen(false)}
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-cream transition hover:bg-white/10"
+              >
                 <Icon icon={X} size="md" />
               </button>
             </div>

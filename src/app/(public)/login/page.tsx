@@ -143,7 +143,7 @@ function LoginForm() {
         </form>
         <p className="mt-4 text-sm text-muted">
           {t("newStudent")}{" "}
-          <Link href="/register" className="inline-flex items-center gap-1.5 font-semibold text-red">
+          <Link href="/register" className="inline-flex items-center gap-1.5 py-1 font-semibold text-red">
             <Icon icon={UserPlus} />
             {t("joinKick")}
           </Link>

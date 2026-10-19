@@ -62,12 +62,12 @@ export function PublicFooterView() {
         <div>
           <p className="font-display text-sm text-cream">{t("navigate")}</p>
           <div className="mt-2 h-0.5 w-10 bg-red" />
-          <nav className="mt-5 flex flex-col gap-2.5 text-sm" aria-label={t("navigate")}>
+          <nav className="mt-5 flex flex-col gap-1.5 text-sm" aria-label={t("navigate")}>
             {explore.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="inline-flex items-center gap-2 text-cream/75 transition hover:translate-x-0.5 hover:text-red"
+                className="inline-flex min-h-10 items-center gap-2 text-cream/75 transition hover:translate-x-0.5 hover:text-red"
               >
                 <Icon icon={link.icon} className="text-gold" />
                 {link.label}
@@ -75,7 +75,7 @@ export function PublicFooterView() {
             ))}
             <button
               type="button"
-              className="inline-flex items-center gap-2 text-left text-cream/75 transition hover:translate-x-0.5 hover:text-red"
+              className="inline-flex min-h-10 items-center gap-2 text-left text-cream/75 transition hover:translate-x-0.5 hover:text-red"
               onClick={() => void requestInstallHelp()}
             >
               <Icon icon={Download} className="text-gold" />

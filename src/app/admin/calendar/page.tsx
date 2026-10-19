@@ -136,7 +136,7 @@ export default function AdminCalendarPage() {
               <Label htmlFor="date">Date</Label>
               <Input id="date" type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} required />
             </div>
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex min-h-11 items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={form.allDay}

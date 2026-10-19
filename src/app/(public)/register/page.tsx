@@ -118,7 +118,7 @@ export default function RegisterPage() {
         </form>
         <p className="mt-4 text-sm text-muted">
           {t("alreadyRegistered")}{" "}
-          <Link href="/login" className="inline-flex items-center gap-1.5 font-semibold text-red">
+          <Link href="/login" className="inline-flex items-center gap-1.5 py-1 font-semibold text-red">
             <Icon icon={LogIn} />
             {t("studentLogin")}
           </Link>

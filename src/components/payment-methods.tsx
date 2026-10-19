@@ -189,7 +189,7 @@ export function PaymentMethodsEditor({
                 className="max-h-12 max-w-24 object-contain"
               />
             </div>
-            <label className="inline-flex items-center gap-2 text-sm">
+            <label className="inline-flex min-h-11 items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={method.enabled}
