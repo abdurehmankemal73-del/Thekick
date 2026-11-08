@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
   CalendarDays,
-  Download,
   Home,
   Info,
   LayoutDashboard,
@@ -26,7 +25,7 @@ import { SiteControls } from "@/components/site-controls";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useI18n } from "@/i18n/provider";
 import { cn } from "@/lib/utils";
-import { isStandaloneDisplay, requestInstallHelp } from "@/components/pwa";
+
 import { CLUB } from "@/lib/constants";
 
 /** Scroll position that flips the header into its condensed, shadowed state. */
@@ -38,20 +37,6 @@ function readScrolled() {
   return window.scrollY > 8;
 }
 
-/** App-install availability follows the display mode; it never changes on the server. */
-function subscribeDisplayMode(onChange: () => void) {
-  const queries = ["(display-mode: standalone)", "(display-mode: fullscreen)"].map((query) =>
-    window.matchMedia(query),
-  );
-  for (const query of queries) query.addEventListener("change", onChange);
-  return () => {
-    for (const query of queries) query.removeEventListener("change", onChange);
-  };
-}
-function readInstallable() {
-  return !isStandaloneDisplay();
-}
-
 export function PublicHeader() {
   const pathname = usePathname();
   const { data } = useSession();
@@ -60,7 +45,6 @@ export function PublicHeader() {
   const { t } = useI18n();
   const menuId = useId();
   const scrolled = useSyncExternalStore(subscribeScroll, readScrolled, () => false);
-  const canInstall = useSyncExternalStore(subscribeDisplayMode, readInstallable, () => false);
   const dashboard =
     data?.user?.accountStatus === "PENDING"
       ? "/pay"
@@ -187,17 +171,6 @@ export function PublicHeader() {
         <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
           <ColorSwitcher light className="hidden h-11 w-11 sm:inline-flex" />
           <div className="hidden sm:inline-flex"><LanguageSwitcher light /></div>
-          {canInstall ? (
-            <button
-              type="button"
-              title={t("installApp")}
-              aria-label={t("installApp")}
-              className="hidden h-11 w-11 items-center justify-center rounded-md border border-white/20 text-cream transition hover:border-gold hover:text-gold lg:inline-flex"
-              onClick={() => void requestInstallHelp()}
-            >
-              <Icon icon={Download} size="md" />
-            </button>
-          ) : null}
           <div className="hidden items-center gap-2 lg:flex">{authCta}</div>
 
           {/* Mobile menu trigger (the desktop nav replaces it from lg up). */}
@@ -259,31 +232,17 @@ export function PublicHeader() {
                   {link.label}
                 </Link>
               ))}
-              {canInstall ? (
-                <button
-                  type="button"
-                  style={{ animationDelay: `${links.length * 40}ms` }}
-                  className="menu-in flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-cream/80 transition hover:bg-white/10 hover:text-gold"
-                  onClick={() => {
-                    setOpen(false);
-                    void requestInstallHelp();
-                  }}
-                >
-                  <Icon icon={Download} className="text-gold" />
-                  {t("installApp")}
-                </button>
-              ) : null}
               {/* Theme + language controls live here on phones to keep the bar clean. */}
               <div
                 className="menu-in flex min-h-11 items-center justify-between gap-3 rounded-lg px-3 py-2 sm:hidden"
-                style={{ animationDelay: `${(links.length + (canInstall ? 1 : 0)) * 40}ms` }}
+                style={{ animationDelay: `${links.length * 40}ms` }}
               >
                 <span className="text-sm font-medium text-cream/80">{t("color")} / {t("language")}</span>
                 <SiteControls light />
               </div>
               <div
                 className="menu-in flex flex-col gap-2 pt-3 sm:flex-row"
-                style={{ animationDelay: `${(links.length + (canInstall ? 1 : 0) + 1) * 40}ms` }}
+                style={{ animationDelay: `${(links.length + 1) * 40}ms` }}
               >
                 {authCta}
               </div>
