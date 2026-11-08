@@ -141,7 +141,7 @@ export function PublicHeader() {
         </Link>
 
         {/* Desktop navigation: inline links with an animated active marker. */}
-        <nav aria-label="Main" className="hidden min-w-0 items-center gap-1 lg:flex">
+        <nav aria-label="Main" className="hidden shrink-0 items-center gap-1 lg:flex">
           {links.map((link) => {
             const active = isActive(link.href);
             return (
