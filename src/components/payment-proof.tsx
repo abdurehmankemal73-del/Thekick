@@ -138,7 +138,7 @@ export function PaymentProofForm({
         <img
           src={shown}
           alt={t("adminProof")}
-          className="mt-4 max-h-80 rounded-md border border-line object-contain"
+          className="mt-4 max-h-64 w-full rounded-md border border-line object-contain sm:max-h-80"
         />
       ) : null}
 

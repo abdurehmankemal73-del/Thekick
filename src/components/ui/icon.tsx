@@ -30,7 +30,7 @@ export function PageTitle({
   className?: string;
 }) {
   return (
-    <h1 className={cn("flex flex-wrap items-center gap-2.5 text-3xl", className)}>
+    <h1 className={cn("flex flex-wrap items-center gap-2.5 text-2xl sm:text-3xl", className)}>
       <Icon icon={icon} size="md" className="text-gold" />
       <span>{children}</span>
     </h1>

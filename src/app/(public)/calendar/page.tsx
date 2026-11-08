@@ -18,7 +18,7 @@ export default function CalendarPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
-      <PageTitle icon={CalendarDays} className="text-4xl">{t("navCalendar")}</PageTitle>
+      <PageTitle icon={CalendarDays} className="text-3xl sm:text-4xl">{t("navCalendar")}</PageTitle>
       <p className="mt-3 max-w-2xl text-muted">{t("calendarLead")}</p>
       <div className="mt-8">
         {!events ? (

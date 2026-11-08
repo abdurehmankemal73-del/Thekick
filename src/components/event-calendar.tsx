@@ -84,13 +84,13 @@ export function EventCalendar({
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(16rem,1fr)]">
       <Card className="overflow-hidden p-0">
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
-          <Button variant="outline" size="sm" onClick={() => setCursor((value) => addMonths(value, -1))}>
+          <Button variant="outline" size="sm" className="h-10 w-10" onClick={() => setCursor((value) => addMonths(value, -1))}>
             <Icon icon={ChevronLeft} />
           </Button>
           <p className="font-display text-lg">
             {cursor.toLocaleString("en-GB", { month: "long", year: "numeric" })}
           </p>
-          <Button variant="outline" size="sm" onClick={() => setCursor((value) => addMonths(value, 1))}>
+          <Button variant="outline" size="sm" className="h-10 w-10" onClick={() => setCursor((value) => addMonths(value, 1))}>
             <Icon icon={ChevronRight} />
           </Button>
         </div>
@@ -111,7 +111,7 @@ export function EventCalendar({
                 type="button"
                 onClick={() => setSelected(key)}
                 className={cn(
-                  "min-h-20 border-b border-r border-line p-1.5 text-left text-sm",
+                  "min-h-16 border-b border-r border-line p-1 text-left text-sm sm:min-h-20 sm:p-1.5",
                   !inMonth && "bg-surface/60 text-muted",
                   isSelected && "bg-gold/15",
                 )}

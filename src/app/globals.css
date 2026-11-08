@@ -58,6 +58,7 @@ body {
   background: var(--surface);
   color: var(--ink);
   font-family: var(--font-sans), var(--font-ethiopic), system-ui, sans-serif;
+  overflow-x: hidden;
 }
 
 @media (display-mode: standalone) {

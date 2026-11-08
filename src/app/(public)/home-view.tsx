@@ -87,11 +87,11 @@ export function HomeView({
               {t("heroTag")}
             </p>
             <div className="mt-8 flex flex-col items-center gap-3">
-              <div className="flex w-full flex-wrap items-stretch justify-center gap-3">
+              <div className="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
                 <Button
                   asChild
                   size="lg"
-                  className="h-12 min-h-12 min-w-0 flex-1 justify-center px-3 sm:flex-none sm:px-5 md:px-6"
+                  className="h-12 min-h-12 w-full justify-center px-5 sm:w-auto sm:px-6"
                 >
                   <Link href="/register">
                     <Icon icon={UserPlus} />
@@ -102,7 +102,7 @@ export function HomeView({
                   asChild
                   size="lg"
                   variant="gold"
-                  className="h-12 min-h-12 min-w-0 flex-1 justify-center px-3 sm:flex-none sm:px-5 md:px-6"
+                  className="h-12 min-h-12 w-full justify-center px-5 sm:w-auto sm:px-6"
                 >
                   <Link href="/login">
                     <Icon icon={LogIn} />
@@ -143,7 +143,7 @@ export function HomeView({
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <h2 className="text-3xl">{t("whyTrain")}</h2>
+        <h2 className="text-2xl sm:text-3xl">{t("whyTrain")}</h2>
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {benefits.map((item) => (
             <Card key={item.title}>
@@ -160,8 +160,8 @@ export function HomeView({
       <section className="bg-white py-16">
         <div className="mx-auto max-w-6xl px-4">
           <div className="flex items-end justify-between gap-4">
-            <SectionTitle icon={Megaphone} className="text-3xl">{t("news")}</SectionTitle>
-            <Link href="/news" className="inline-block py-1 text-sm font-semibold text-red">
+            <SectionTitle icon={Megaphone} className="text-2xl sm:text-3xl">{t("news")}</SectionTitle>
+            <Link href="/news" className="inline-flex min-h-10 items-center py-1 text-sm font-semibold text-red">
               {t("news")}
             </Link>
           </div>

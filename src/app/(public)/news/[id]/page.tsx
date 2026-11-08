@@ -69,7 +69,7 @@ export default function NewsDetailPage() {
       <p className="mt-6 text-xs uppercase tracking-widest text-gold">
         {formatDate(item.publishedAt ?? item.createdAt)} · {item.authorName}
       </p>
-      <h1 className="mt-2 text-4xl">{item.title}</h1>
+      <h1 className="mt-2 text-3xl sm:text-4xl">{item.title}</h1>
       {item.imageUrl ? (
         <NewsImage
           src={item.imageUrl}

@@ -60,7 +60,7 @@ export default function ContactPage() {
     <div className="mx-auto grid max-w-5xl gap-8 px-4 py-16 lg:grid-cols-2">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-red">{t("contactEyebrow")}</p>
-        <PageTitle icon={Mail} className="mt-3 text-4xl">{t("trainWithUs")}</PageTitle>
+        <PageTitle icon={Mail} className="mt-3 text-3xl sm:text-4xl">{t("trainWithUs")}</PageTitle>
         <p className="mt-4 text-muted">{t("contactLead")}</p>
         <ul className="mt-8 space-y-4 text-sm">
           {[
@@ -91,7 +91,7 @@ export default function ContactPage() {
               <span>
                 <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">{item.label}</span>
                 {"href" in item && item.href ? (
-                  <a href={item.href} className="mt-0.5 block whitespace-pre-line py-1 hover:text-red">
+                  <a href={item.href} className="mt-0.5 block min-h-11 whitespace-pre-line py-2 hover:text-red">
                     {item.value}
                   </a>
                 ) : (

@@ -192,6 +192,7 @@ export function PaymentMethodsEditor({
             <label className="inline-flex min-h-11 items-center gap-2 text-sm">
               <input
                 type="checkbox"
+                className="h-4 w-4"
                 checked={method.enabled}
                 onChange={(event) => update(index, { enabled: event.target.checked })}
               />
@@ -251,7 +252,7 @@ export function PaymentMethodsEditor({
               onChange={(event) => update(index, { logoUrl: event.target.value })}
             />
           </div>
-          <Button type="button" variant="outline" size="sm" onClick={() => removeMethod(index)}>
+          <Button type="button" variant="outline" size="sm" className="h-10" onClick={() => removeMethod(index)}>
             <Icon icon={Trash2} />
             {t("payRemove")}
           </Button>

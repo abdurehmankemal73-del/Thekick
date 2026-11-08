@@ -62,11 +62,11 @@ export default function AdminDashboardPage() {
           <p className="text-muted">{t("clubOps")}</p>
         </div>
         <div className="flex gap-2">
-          <Link className="inline-flex items-center gap-2 rounded-md bg-red px-4 py-2 text-sm font-semibold text-white" href="/admin/students">
+          <Link className="inline-flex min-h-10 items-center gap-2 rounded-md bg-red px-4 py-2 text-sm font-semibold text-white" href="/admin/students">
             <Icon icon={Users} />
             {t("manageStudents")}
           </Link>
-          <Link className="inline-flex items-center gap-2 rounded-md border border-line px-4 py-2 text-sm font-semibold" href="/admin/announcements">
+          <Link className="inline-flex min-h-10 items-center gap-2 rounded-md border border-line px-4 py-2 text-sm font-semibold" href="/admin/announcements">
             <Icon icon={Plus} />
             {t("newAnnouncement")}
           </Link>
@@ -80,7 +80,7 @@ export default function AdminDashboardPage() {
                 <Icon icon={card.icon} className="text-gold" />
                 {card.label}
               </p>
-              <p className="mt-2 font-display text-3xl">{card.value}</p>
+              <p className="mt-2 font-display text-2xl sm:text-3xl">{card.value}</p>
             </Card>
           </Link>
         ))}
@@ -88,7 +88,7 @@ export default function AdminDashboardPage() {
       <Card>
         <div className="mb-3 flex items-center justify-between">
           <SectionTitle icon={UserPlus}>{t("pendingRegistrations")}</SectionTitle>
-          <Link href="/admin/students?status=PENDING" className="text-sm text-red">{t("viewAll")}</Link>
+          <Link href="/admin/students?status=PENDING" className="inline-flex min-h-10 items-center text-sm text-red">{t("viewAll")}</Link>
         </div>
         {data.pendingStudents.length === 0 ? (
           <EmptyState title="No pending registrations." icon={UserPlus} />

@@ -70,7 +70,7 @@ export default function RegisterPage() {
 
   return (
     <div className="mx-auto max-w-xl px-4 py-16">
-      <PageTitle icon={UserPlus} className="text-4xl">{t("joinKick")}</PageTitle>
+      <PageTitle icon={UserPlus} className="text-3xl sm:text-4xl">{t("joinKick")}</PageTitle>
       <p className="mt-3 text-muted">{t("registerLead")}</p>
       <Card className="mt-8">
         <form onSubmit={onSubmit} className="space-y-4" noValidate>
@@ -118,7 +118,7 @@ export default function RegisterPage() {
         </form>
         <p className="mt-4 text-sm text-muted">
           {t("alreadyRegistered")}{" "}
-          <Link href="/login" className="inline-flex items-center gap-1.5 py-1 font-semibold text-red">
+          <Link href="/login" className="inline-flex min-h-10 items-center gap-1.5 py-2 font-semibold text-red">
             <Icon icon={LogIn} />
             {t("studentLogin")}
           </Link>

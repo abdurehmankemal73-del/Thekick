@@ -67,7 +67,7 @@ export function PublicFooterView() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="inline-flex min-h-10 items-center gap-2 text-cream/75 transition hover:translate-x-0.5 hover:text-red"
+                className="inline-flex min-h-11 items-center gap-2 text-cream/75 transition hover:translate-x-0.5 hover:text-red"
               >
                 <Icon icon={link.icon} className="text-gold" />
                 {link.label}
@@ -75,7 +75,7 @@ export function PublicFooterView() {
             ))}
             <button
               type="button"
-              className="inline-flex min-h-10 items-center gap-2 text-left text-cream/75 transition hover:translate-x-0.5 hover:text-red"
+              className="inline-flex min-h-11 items-center gap-2 text-left text-cream/75 transition hover:translate-x-0.5 hover:text-red"
               onClick={() => void requestInstallHelp()}
             >
               <Icon icon={Download} className="text-gold" />
@@ -92,7 +92,7 @@ export function PublicFooterView() {
               <li key={item.label}>
                 <a
                   href={item.href}
-                  className="group flex items-start gap-3 text-sm text-cream/80 transition hover:text-cream"
+                  className="group flex min-h-11 items-start gap-3 text-sm text-cream/80 transition hover:text-cream"
                   {...(item.href.startsWith("http")
                     ? { target: "_blank", rel: "noreferrer" }
                     : {})}

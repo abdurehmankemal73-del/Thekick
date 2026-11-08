@@ -83,7 +83,7 @@ export default function StudentDashboardPage() {
         <Card>
           <div className="mb-3 flex items-center justify-between">
             <SectionTitle icon={GraduationCap}>{t("recentGrades")}</SectionTitle>
-            <Link href="/student/grades" className="text-sm text-red">{t("viewAll")}</Link>
+            <Link href="/student/grades" className="inline-flex min-h-10 items-center text-sm text-red">{t("viewAll")}</Link>
           </div>
           {data.grades.length === 0 ? (
             <EmptyState title={t("noGrades")} icon={GraduationCap} />
@@ -101,7 +101,7 @@ export default function StudentDashboardPage() {
         <Card>
           <div className="mb-3 flex items-center justify-between">
             <SectionTitle icon={ClipboardList}>{t("permissionStatus")}</SectionTitle>
-            <Link href="/student/permission" className="text-sm text-red">{t("request")}</Link>
+            <Link href="/student/permission" className="inline-flex min-h-10 items-center text-sm text-red">{t("request")}</Link>
           </div>
           {data.permissions.length === 0 ? (
             <EmptyState title={t("noPermissions")} icon={ClipboardList} />
@@ -120,7 +120,7 @@ export default function StudentDashboardPage() {
       <Card>
         <div className="mb-3 flex items-center justify-between">
           <SectionTitle icon={Megaphone}>{t("announcements")}</SectionTitle>
-          <Link href="/student/announcements" className="text-sm text-red">{t("viewAll")}</Link>
+          <Link href="/student/announcements" className="inline-flex min-h-10 items-center text-sm text-red">{t("viewAll")}</Link>
         </div>
         {data.announcements.length === 0 ? (
           <EmptyState title={t("noNews")} icon={Megaphone} />
@@ -142,7 +142,7 @@ export default function StudentDashboardPage() {
             {t("studentsInBelt")}
             {data.user.beltLevel ? ` — ${tBelt(data.user.beltLevel)}` : ""}
           </SectionTitle>
-          <Link href="/student/members" className="text-sm text-red">{t("directory")}</Link>
+          <Link href="/student/members" className="inline-flex min-h-10 items-center text-sm text-red">{t("directory")}</Link>
         </div>
         {data.members.length === 0 ? (
           <EmptyState title={t("noStudents")} icon={Users} />

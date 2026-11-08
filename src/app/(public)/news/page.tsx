@@ -34,7 +34,7 @@ export default function NewsPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
-      <PageTitle icon={Megaphone} className="text-4xl">{t("news")}</PageTitle>
+      <PageTitle icon={Megaphone} className="text-3xl sm:text-4xl">{t("news")}</PageTitle>
       <p className="mt-3 max-w-2xl text-muted">{t("newsLead")}</p>
       <div className="mt-8">
         {error ? (

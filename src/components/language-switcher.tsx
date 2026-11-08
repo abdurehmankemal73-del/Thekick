@@ -27,7 +27,7 @@ export function LanguageSwitcher({ light = false }: { light?: boolean }) {
           aria-pressed={locale === code}
           title={LOCALE_META[code].name}
           className={cn(
-            "flex min-h-9 min-w-9 items-center justify-center rounded px-2 py-1 leading-none transition sm:min-w-0 sm:px-1.5",
+            "flex min-h-10 min-w-10 items-center justify-center rounded px-2 py-1.5 leading-none transition sm:min-w-0 sm:px-1.5",
             locale === code
               ? light
                 ? "bg-gold text-bg"

@@ -117,7 +117,7 @@ function LoginForm() {
 
   return (
     <div className="mx-auto max-w-md px-4 py-16">
-      <PageTitle icon={LogIn} className="text-4xl">{t("studentLogin")}</PageTitle>
+      <PageTitle icon={LogIn} className="text-3xl sm:text-4xl">{t("studentLogin")}</PageTitle>
       <p className="mt-3 text-muted">{t("loginLead")}</p>
       <Card className="mt-8">
         {formError ? (
@@ -143,7 +143,7 @@ function LoginForm() {
         </form>
         <p className="mt-4 text-sm text-muted">
           {t("newStudent")}{" "}
-          <Link href="/register" className="inline-flex items-center gap-1.5 py-1 font-semibold text-red">
+          <Link href="/register" className="inline-flex min-h-10 items-center gap-1.5 py-2 font-semibold text-red">
             <Icon icon={UserPlus} />
             {t("joinKick")}
           </Link>
