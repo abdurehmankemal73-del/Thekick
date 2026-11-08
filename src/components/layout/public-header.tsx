@@ -22,6 +22,7 @@ import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { ColorSwitcher } from "@/components/color-switcher";
+import { SiteControls } from "@/components/site-controls";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useI18n } from "@/i18n/provider";
 import { cn } from "@/lib/utils";
@@ -185,7 +186,7 @@ export function PublicHeader() {
 
         <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
           <ColorSwitcher light className="hidden h-11 w-11 sm:inline-flex" />
-          <LanguageSwitcher light />
+          <div className="hidden sm:inline-flex"><LanguageSwitcher light /></div>
           {canInstall ? (
             <button
               type="button"
@@ -272,13 +273,13 @@ export function PublicHeader() {
                   {t("installApp")}
                 </button>
               ) : null}
-              {/* The theme toggle leaves the crowded bar on phones and lives here instead. */}
+              {/* Theme + language controls live here on phones to keep the bar clean. */}
               <div
                 className="menu-in flex min-h-11 items-center justify-between gap-3 rounded-lg px-3 py-2 sm:hidden"
                 style={{ animationDelay: `${(links.length + (canInstall ? 1 : 0)) * 40}ms` }}
               >
-                <span className="text-sm font-medium text-cream/80">{t("color")}</span>
-                <ColorSwitcher light className="h-11 w-11" />
+                <span className="text-sm font-medium text-cream/80">{t("color")} / {t("language")}</span>
+                <SiteControls light />
               </div>
               <div
                 className="menu-in flex flex-col gap-2 pt-3 sm:flex-row"
